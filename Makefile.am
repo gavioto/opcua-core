@@ -8,15 +8,15 @@
 
 opcincludedir = $(includedir)/opc
 opcuaincludedir = $(opcincludedir)/ua
-clientincludedir = $(opcuaincludedir)/client
 
-clientinclude_HEADERS = \
+opcuainclude_HEADERS = \
   include/opc/ua/subscriptions.h \
   include/opc/ua/view.h \
   include/opc/ua/connection_listener.h \
   include/opc/ua/computer.h \
   include/opc/ua/attributes.h \
-  include/opc/ua/endpoints.h
+  include/opc/ua/endpoints.h \
+  include/opc/ua/socket_channel.h
 
 commondir = $(opcincludedir)/common
 common_HEADERS = \
@@ -29,9 +29,7 @@ common_HEADERS = \
                   include/opc/common/object_id.h \
                   include/opc/common/thread.h \
                   include/opc/common/uri_facade.h \
-                  include/opc/common/value.h \
-                  include/opc/ua/socket_channel.h
-
+                  include/opc/common/value.h
 
 addonsdir = $(commondir)/addons_core
 addons_HEADERS = \
@@ -83,7 +81,7 @@ common_test_SOURCES = \
                   tests/common/value_test.cpp
 
 
-common_test_CPPFLAGS = -I$(top_srcdir) -I$(top_srcdir)/include $(GTEST_INCLUDES) $(GMOCK_INCLUDES)
+common_test_CPPFLAGS = -I$(top_srcdir) -I$(top_srcdir)/include $(GTEST_INCLUDES)
 common_test_LDADD = libopccore.la
 common_test_LDFLAGS = -lcppunit -ldl 
 
@@ -97,7 +95,7 @@ common_gtest_SOURCES = \
   tests/test_uri.cpp \
   tests/common/thread_test.cpp
 
-common_gtest_CPPFLAGS =  -I/usr/include/libxml2 -I$(top_srcdir) -I$(top_srcdir)/include $(GTEST_INCLUDES) $(GMOCK_INCLUDES)
+common_gtest_CPPFLAGS =  -I/usr/include/libxml2 -I$(top_srcdir) -I$(top_srcdir)/include $(GTEST_INCLUDES)
 common_gtest_LDADD = libopccore.la
 common_gtest_LDFLAGS = -lxml2 -lpthread -ldl -L$(top_builddir) $(GTEST_LIB) $(GTEST_MAIN_LIB) $(GMOCK_LIB) -no-undefined
 

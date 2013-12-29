@@ -15042,6 +15042,13 @@ if test "${with_gtest+set}" = set; then :
               { $as_echo "$as_me:${as_lineno-$LINENO}: Gtest path: $GTEST_INCLUDES" >&5
 $as_echo "$as_me: Gtest path: $GTEST_INCLUDES" >&6;}
 
+else
+
+              GTEST_LIB=-lgtest
+
+              GTEST_MAIN_LIB=-lgtest_main
+
+
 fi
 
 
@@ -15051,10 +15058,15 @@ if test "${with_gmock+set}" = set; then :
   withval=$with_gmock;
               GMOCK_LIB=-Wl,--whole-archive,$with_gmock/lib/.libs/libgmock.a,--no-whole-archive
 
-              GMOCK_INCLUDES=-I$with_gmock/include
+              GMOCK_INCLUDES=-I$with_mock/include
 
-              { $as_echo "$as_me:${as_lineno-$LINENO}: Gmock path: $GMOCK_INCLUDES" >&5
-$as_echo "$as_me: Gmock path: $GMOCK_INCLUDES" >&6;}
+              { $as_echo "$as_me:${as_lineno-$LINENO}: gmock path: $GMOCK_INCLUDES" >&5
+$as_echo "$as_me: gmock path: $GMOCK_INCLUDES" >&6;}
+
+else
+
+              GMOCK_LIB=-lgmock
+
 
 fi
 

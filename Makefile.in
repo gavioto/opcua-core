@@ -64,7 +64,7 @@ TESTS = common_gtest$(EXEEXT) common_test$(EXEEXT)
 check_PROGRAMS = $(am__EXEEXT_1)
 subdir = .
 DIST_COMMON = README $(addons_HEADERS) $(am__configure_deps) \
-	$(clientinclude_HEADERS) $(common_HEADERS) \
+	$(common_HEADERS) $(opcuainclude_HEADERS) \
 	$(srcdir)/Makefile.am $(srcdir)/Makefile.in \
 	$(srcdir)/config.h.in $(top_srcdir)/configure AUTHORS COPYING \
 	ChangeLog INSTALL NEWS config.guess config.sub depcomp \
@@ -107,7 +107,7 @@ am__uninstall_files_from_dir = { \
          $(am__cd) "$$dir" && rm -f $$files; }; \
   }
 am__installdirs = "$(DESTDIR)$(libdir)" "$(DESTDIR)$(addonsdir)" \
-	"$(DESTDIR)$(clientincludedir)" "$(DESTDIR)$(commondir)"
+	"$(DESTDIR)$(commondir)" "$(DESTDIR)$(opcuaincludedir)"
 LTLIBRARIES = $(lib_LTLIBRARIES)
 libopccore_la_LIBADD =
 am_libopccore_la_OBJECTS = libopccore_la-application.lo \
@@ -172,7 +172,7 @@ am__can_run_installinfo = \
     n|no|NO) false;; \
     *) (install-info --version) >/dev/null 2>&1;; \
   esac
-HEADERS = $(addons_HEADERS) $(clientinclude_HEADERS) $(common_HEADERS)
+HEADERS = $(addons_HEADERS) $(common_HEADERS) $(opcuainclude_HEADERS)
 ETAGS = etags
 CTAGS = ctags
 am__tty_colors = \
@@ -317,14 +317,14 @@ top_builddir = @top_builddir@
 top_srcdir = @top_srcdir@
 opcincludedir = $(includedir)/opc
 opcuaincludedir = $(opcincludedir)/ua
-clientincludedir = $(opcuaincludedir)/client
-clientinclude_HEADERS = \
+opcuainclude_HEADERS = \
   include/opc/ua/subscriptions.h \
   include/opc/ua/view.h \
   include/opc/ua/connection_listener.h \
   include/opc/ua/computer.h \
   include/opc/ua/attributes.h \
-  include/opc/ua/endpoints.h
+  include/opc/ua/endpoints.h \
+  include/opc/ua/socket_channel.h
 
 commondir = $(opcincludedir)/common
 common_HEADERS = \
@@ -337,8 +337,7 @@ common_HEADERS = \
                   include/opc/common/object_id.h \
                   include/opc/common/thread.h \
                   include/opc/common/uri_facade.h \
-                  include/opc/common/value.h \
-                  include/opc/ua/socket_channel.h
+                  include/opc/common/value.h
 
 addonsdir = $(commondir)/addons_core
 addons_HEADERS = \
@@ -374,7 +373,7 @@ common_test_SOURCES = \
                   tests/common/main.cpp \
                   tests/common/value_test.cpp
 
-common_test_CPPFLAGS = -I$(top_srcdir) -I$(top_srcdir)/include $(GTEST_INCLUDES) $(GMOCK_INCLUDES)
+common_test_CPPFLAGS = -I$(top_srcdir) -I$(top_srcdir)/include $(GTEST_INCLUDES)
 common_test_LDADD = libopccore.la
 common_test_LDFLAGS = -lcppunit -ldl 
 common_gtest_SOURCES = \
@@ -387,7 +386,7 @@ common_gtest_SOURCES = \
   tests/test_uri.cpp \
   tests/common/thread_test.cpp
 
-common_gtest_CPPFLAGS = -I/usr/include/libxml2 -I$(top_srcdir) -I$(top_srcdir)/include $(GTEST_INCLUDES) $(GMOCK_INCLUDES)
+common_gtest_CPPFLAGS = -I/usr/include/libxml2 -I$(top_srcdir) -I$(top_srcdir)/include $(GTEST_INCLUDES)
 common_gtest_LDADD = libopccore.la
 common_gtest_LDFLAGS = -lxml2 -lpthread -ldl -L$(top_builddir) $(GTEST_LIB) $(GTEST_MAIN_LIB) $(GMOCK_LIB) -no-undefined
 EXTRA_DIST = \
@@ -785,27 +784,6 @@ uninstall-addonsHEADERS:
 	@list='$(addons_HEADERS)'; test -n "$(addonsdir)" || list=; \
 	files=`for p in $$list; do echo $$p; done | sed -e 's|^.*/||'`; \
 	dir='$(DESTDIR)$(addonsdir)'; $(am__uninstall_files_from_dir)
-install-clientincludeHEADERS: $(clientinclude_HEADERS)
-	@$(NORMAL_INSTALL)
-	@list='$(clientinclude_HEADERS)'; test -n "$(clientincludedir)" || list=; \
-	if test -n "$$list"; then \
-	  echo " $(MKDIR_P) '$(DESTDIR)$(clientincludedir)'"; \
-	  $(MKDIR_P) "$(DESTDIR)$(clientincludedir)" || exit 1; \
-	fi; \
-	for p in $$list; do \
-	  if test -f "$$p"; then d=; else d="$(srcdir)/"; fi; \
-	  echo "$$d$$p"; \
-	done | $(am__base_list) | \
-	while read files; do \
-	  echo " $(INSTALL_HEADER) $$files '$(DESTDIR)$(clientincludedir)'"; \
-	  $(INSTALL_HEADER) $$files "$(DESTDIR)$(clientincludedir)" || exit $$?; \
-	done
-
-uninstall-clientincludeHEADERS:
-	@$(NORMAL_UNINSTALL)
-	@list='$(clientinclude_HEADERS)'; test -n "$(clientincludedir)" || list=; \
-	files=`for p in $$list; do echo $$p; done | sed -e 's|^.*/||'`; \
-	dir='$(DESTDIR)$(clientincludedir)'; $(am__uninstall_files_from_dir)
 install-commonHEADERS: $(common_HEADERS)
 	@$(NORMAL_INSTALL)
 	@list='$(common_HEADERS)'; test -n "$(commondir)" || list=; \
@@ -827,6 +805,27 @@ uninstall-commonHEADERS:
 	@list='$(common_HEADERS)'; test -n "$(commondir)" || list=; \
 	files=`for p in $$list; do echo $$p; done | sed -e 's|^.*/||'`; \
 	dir='$(DESTDIR)$(commondir)'; $(am__uninstall_files_from_dir)
+install-opcuaincludeHEADERS: $(opcuainclude_HEADERS)
+	@$(NORMAL_INSTALL)
+	@list='$(opcuainclude_HEADERS)'; test -n "$(opcuaincludedir)" || list=; \
+	if test -n "$$list"; then \
+	  echo " $(MKDIR_P) '$(DESTDIR)$(opcuaincludedir)'"; \
+	  $(MKDIR_P) "$(DESTDIR)$(opcuaincludedir)" || exit 1; \
+	fi; \
+	for p in $$list; do \
+	  if test -f "$$p"; then d=; else d="$(srcdir)/"; fi; \
+	  echo "$$d$$p"; \
+	done | $(am__base_list) | \
+	while read files; do \
+	  echo " $(INSTALL_HEADER) $$files '$(DESTDIR)$(opcuaincludedir)'"; \
+	  $(INSTALL_HEADER) $$files "$(DESTDIR)$(opcuaincludedir)" || exit $$?; \
+	done
+
+uninstall-opcuaincludeHEADERS:
+	@$(NORMAL_UNINSTALL)
+	@list='$(opcuainclude_HEADERS)'; test -n "$(opcuaincludedir)" || list=; \
+	files=`for p in $$list; do echo $$p; done | sed -e 's|^.*/||'`; \
+	dir='$(DESTDIR)$(opcuaincludedir)'; $(am__uninstall_files_from_dir)
 
 ID: $(HEADERS) $(SOURCES) $(LISP) $(TAGS_FILES)
 	list='$(SOURCES) $(HEADERS) $(LISP) $(TAGS_FILES)'; \
@@ -1141,7 +1140,7 @@ check-am: all-am
 check: check-am
 all-am: Makefile $(LTLIBRARIES) $(HEADERS) config.h all-local
 installdirs:
-	for dir in "$(DESTDIR)$(libdir)" "$(DESTDIR)$(addonsdir)" "$(DESTDIR)$(clientincludedir)" "$(DESTDIR)$(commondir)"; do \
+	for dir in "$(DESTDIR)$(libdir)" "$(DESTDIR)$(addonsdir)" "$(DESTDIR)$(commondir)" "$(DESTDIR)$(opcuaincludedir)"; do \
 	  test -z "$$dir" || $(MKDIR_P) "$$dir"; \
 	done
 install: install-am
@@ -1199,8 +1198,8 @@ info: info-am
 
 info-am:
 
-install-data-am: install-addonsHEADERS install-clientincludeHEADERS \
-	install-commonHEADERS
+install-data-am: install-addonsHEADERS install-commonHEADERS \
+	install-opcuaincludeHEADERS
 
 install-dvi: install-dvi-am
 
@@ -1248,8 +1247,8 @@ ps: ps-am
 
 ps-am:
 
-uninstall-am: uninstall-addonsHEADERS uninstall-clientincludeHEADERS \
-	uninstall-commonHEADERS uninstall-libLTLIBRARIES
+uninstall-am: uninstall-addonsHEADERS uninstall-commonHEADERS \
+	uninstall-libLTLIBRARIES uninstall-opcuaincludeHEADERS
 
 .MAKE: all check-am install-am install-strip
 
@@ -1261,18 +1260,17 @@ uninstall-am: uninstall-addonsHEADERS uninstall-clientincludeHEADERS \
 	distclean-generic distclean-hdr distclean-libtool \
 	distclean-tags distcleancheck distdir distuninstallcheck dvi \
 	dvi-am html html-am info info-am install install-addonsHEADERS \
-	install-am install-clientincludeHEADERS install-commonHEADERS \
-	install-data install-data-am install-dvi install-dvi-am \
-	install-exec install-exec-am install-html install-html-am \
-	install-info install-info-am install-libLTLIBRARIES \
-	install-man install-pdf install-pdf-am install-ps \
-	install-ps-am install-strip installcheck installcheck-am \
-	installdirs maintainer-clean maintainer-clean-generic \
-	mostlyclean mostlyclean-compile mostlyclean-generic \
-	mostlyclean-libtool pdf pdf-am ps ps-am tags uninstall \
-	uninstall-addonsHEADERS uninstall-am \
-	uninstall-clientincludeHEADERS uninstall-commonHEADERS \
-	uninstall-libLTLIBRARIES
+	install-am install-commonHEADERS install-data install-data-am \
+	install-dvi install-dvi-am install-exec install-exec-am \
+	install-html install-html-am install-info install-info-am \
+	install-libLTLIBRARIES install-man install-opcuaincludeHEADERS \
+	install-pdf install-pdf-am install-ps install-ps-am \
+	install-strip installcheck installcheck-am installdirs \
+	maintainer-clean maintainer-clean-generic mostlyclean \
+	mostlyclean-compile mostlyclean-generic mostlyclean-libtool \
+	pdf pdf-am ps ps-am tags uninstall uninstall-addonsHEADERS \
+	uninstall-am uninstall-commonHEADERS uninstall-libLTLIBRARIES \
+	uninstall-opcuaincludeHEADERS
 
 
 test_dynamic_addon.o: tests/test_dynamic_addon.cpp
