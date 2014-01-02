@@ -1,10 +1,11 @@
-# Author: Alexander Rykovanov 2012
-#
 #
 # Distributed under the GNU LGPL License
 # (See accompanying file LICENSE or copy at 
 # http://www.gnu.org/licenses/lgpl.html)
 #
+
+LIBS = -lboost_system
+
 
 opcincludedir = $(includedir)/opc
 opcuaincludedir = $(opcincludedir)/ua
@@ -58,7 +59,7 @@ libopcuacore_la_SOURCES = \
                   src/socket_channel.cpp
 
 libopcuacore_la_CPPFLAGS = -I$(top_srcdir) -I$(top_srcdir)/include -I/usr/include/libxml2
-libopcuacore_la_LDFLAGS = -ldl -lpthread -lxml2
+libopcuacore_la_LDFLAGS = -ldl -lpthread -lxml2 
 
 test_dynamic_addon.o: tests/test_dynamic_addon.cpp
 	$(CC) -std=c++0x -I$(top_srcdir)/src -I$(top_srcdir)/include -fPIC -g -c -Wall tests/test_dynamic_addon.cpp 
@@ -83,7 +84,7 @@ common_test_SOURCES = \
 
 common_test_CPPFLAGS = -I$(top_srcdir) -I$(top_srcdir)/include $(GTEST_INCLUDES)
 common_test_LDADD = libopcuacore.la
-common_test_LDFLAGS = -lcppunit -ldl 
+common_test_LDFLAGS = -lcppunit -ldl
 
 common_gtest_SOURCES = \
   tests/test_addon_manager.cpp \

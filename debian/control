@@ -10,12 +10,12 @@ Vcs-Git: https://github.com/treww/opcua-core.git
 Package: libopcuacore-dev
 Section: libdevel
 Architecture: any
-Depends: libopcuacore (= ${binary:Version})
+Depends: libopcuacore (= ${binary:Version}), libboost-system-dev, opcuamappings-dev (= 0.1.2)
 Description: OPCUA core infrastructure developer files.
 
 Package: libopcuacore
 Section: libs
 Architecture: any
-Depends: ${shlibs:Depends}, ${misc:Depends}
+Depends: ${shlibs:Depends}, ${misc:Depends}, libboost-system-dev, opcuamappings (= 0.1.2)
 Description: OPCUA core infrastructure.
 

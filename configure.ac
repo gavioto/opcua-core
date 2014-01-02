@@ -5,19 +5,19 @@
 # http://www.gnu.org/licenses/lgpl.html)
 #
 
-AC_INIT
+AC_INIT([libopcuacore], [0.1.2], [rykovanov.as@gmail.com])
 AC_CONFIG_AUX_DIR([.])
 AC_CONFIG_SRCDIR([src/common/addons_core/addon_manager.cpp])
-AM_INIT_AUTOMAKE([libopcuacore], [0.1.2], [rykovanov.as@gmail.com])
+AM_INIT_AUTOMAKE([-Wall -Werror])
 
-CXXFLAGS="-O0 -g -Wall -std=c++0x"
+CXXFLAGS="-O0 -g -std=c++0x"
 
 AC_PROG_CXX
+AM_PROG_AR
 AC_PROG_LIBTOOL
 
 AC_CONFIG_MACRO_DIR([m4])
 AC_CONFIG_HEADER([config.h])
-
 #check headers
 AC_CHECK_HEADERS([unistd.h])
 
