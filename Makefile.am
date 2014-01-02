@@ -41,8 +41,8 @@ addons_HEADERS = \
                   include/opc/common/addons_core/dynamic_addon_factory.h \
                   include/opc/common/addons_core/errors.h
 
-lib_LTLIBRARIES = libopccore.la
-libopccore_la_SOURCES = \
+lib_LTLIBRARIES = libopcuacore.la
+libopcuacore_la_SOURCES = \
                   src/common/application.cpp \
                   src/common/object_id.cpp \
                   src/common/thread.cpp \
@@ -57,8 +57,8 @@ libopccore_la_SOURCES = \
                   src/common/common_errors.cpp \
                   src/socket_channel.cpp
 
-libopccore_la_CPPFLAGS = -I$(top_srcdir) -I$(top_srcdir)/include -I/usr/include/libxml2
-libopccore_la_LDFLAGS = -ldl -lpthread -lxml2
+libopcuacore_la_CPPFLAGS = -I$(top_srcdir) -I$(top_srcdir)/include -I/usr/include/libxml2
+libopcuacore_la_LDFLAGS = -ldl -lpthread -lxml2
 
 test_dynamic_addon.o: tests/test_dynamic_addon.cpp
 	$(CC) -std=c++0x -I$(top_srcdir)/src -I$(top_srcdir)/include -fPIC -g -c -Wall tests/test_dynamic_addon.cpp 
@@ -82,7 +82,7 @@ common_test_SOURCES = \
 
 
 common_test_CPPFLAGS = -I$(top_srcdir) -I$(top_srcdir)/include $(GTEST_INCLUDES)
-common_test_LDADD = libopccore.la
+common_test_LDADD = libopcuacore.la
 common_test_LDFLAGS = -lcppunit -ldl 
 
 common_gtest_SOURCES = \
@@ -96,9 +96,22 @@ common_gtest_SOURCES = \
   tests/common/thread_test.cpp
 
 common_gtest_CPPFLAGS =  -I/usr/include/libxml2 -I$(top_srcdir) -I$(top_srcdir)/include $(GTEST_INCLUDES)
-common_gtest_LDADD = libopccore.la
+common_gtest_LDADD = libopcuacore.la
 common_gtest_LDFLAGS = -lxml2 -lpthread -ldl -L$(top_builddir) $(GTEST_LIB) $(GTEST_MAIN_LIB) $(GMOCK_LIB) -no-undefined
 
 EXTRA_DIST = \
-  tests/configs/test.xml
+  tests/configs/test.xml \
+  debian make_deb.sh
+
+pkgsharedir = $(libdir)/pkgconfig
+pkgshare_DATA = libopcuacore.pc
+
+pkgconfigdir = $(datarootdir)/pkgconfig
+pkgconfig_DATA = libopcuacore.pc
+
+clean-local:
+	rm -rvf libopcuacore*$(VERSION)*
+
+dist-deb:
+	$(top_srcdir)/make_deb.sh
 

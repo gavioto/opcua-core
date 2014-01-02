@@ -8,13 +8,11 @@
 AC_INIT
 AC_CONFIG_AUX_DIR([.])
 AC_CONFIG_SRCDIR([src/common/addons_core/addon_manager.cpp])
-AM_INIT_AUTOMAKE([libopccore], [0.1.2], [rykovanov.as@gmail.com])
-LT_INIT([disable-static])
+AM_INIT_AUTOMAKE([libopcuacore], [0.1.2], [rykovanov.as@gmail.com])
 
 CXXFLAGS="-O0 -g -Wall -std=c++0x"
 
 AC_PROG_CXX
-AC_DISABLE_STATIC
 AC_PROG_LIBTOOL
 
 AC_CONFIG_MACRO_DIR([m4])
@@ -49,7 +47,7 @@ AC_ARG_WITH([gmock],
 
 
 #################################################################
-AC_CONFIG_FILES([Makefile])
+AC_CONFIG_FILES([Makefile libopcuacore.pc])
 
 AC_OUTPUT
 

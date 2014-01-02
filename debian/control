@@ -1,0 +1,21 @@
+Source: libopcuacore
+Priority: extra
+Maintainer: treww <rykovanov.as@gmail.com>
+Build-Depends: debhelper (>= 8.0.0), autotools-dev
+Standards-Version: 3.9.4
+Section: libs
+Homepage: https://github.com/treww/opcua-core
+Vcs-Git: https://github.com/treww/opcua-core.git
+
+Package: libopcuacore-dev
+Section: libdevel
+Architecture: any
+Depends: libopcuacore (= ${binary:Version})
+Description: OPCUA core infrastructure developer files.
+
+Package: libopcuacore
+Section: libs
+Architecture: any
+Depends: ${shlibs:Depends}, ${misc:Depends}
+Description: OPCUA core infrastructure.
+
