@@ -19,13 +19,28 @@ using namespace testing;
 namespace
 {
 
-  class ThreadObserver : public Common::ThreadObserver
+  class TestThreadObserver : public Common::ThreadObserver
   {
   public:
-    typedef NiceMock<ThreadObserver> Mock;
+    TestThreadObserver()
+      : OnSuccessCallCount(0)
+      , OnErrorCallCount(0)
+    {
+    }
+
+    virtual void OnSuccess() override
+    {
+      ++OnSuccessCallCount;
+    }
+
+    virtual void OnError(const std::exception& exc) override
+    {
+      ++OnErrorCallCount;
+    }
+
   public:
-    MOCK_METHOD0(OnSuccess, void());
-    MOCK_METHOD1(OnError, void (const std::exception& exc));
+    volatile unsigned OnSuccessCallCount;
+    volatile unsigned OnErrorCallCount;
   };
 
   void DoNothing()
@@ -36,26 +51,26 @@ namespace
   {
     throw std::logic_error("oppps!");
   }
+
 }
 
 TEST(Thread, CallsOnSuccess)
 {
-  ThreadObserver::Mock observer;
-  EXPECT_CALL(observer, OnSuccess()).Times(1);
-  EXPECT_CALL(observer, OnError(_)).Times(0);
+  TestThreadObserver observer;
 
   Common::Thread thread(std::function<void()>(DoNothing), &observer);
-  std::this_thread::sleep_for(std::chrono::milliseconds(500));
   thread.Join();
+  EXPECT_EQ(observer.OnSuccessCallCount, 1);
+  EXPECT_EQ(observer.OnErrorCallCount, 0);
 }
 
 TEST(Thread, CallsOnError)
 {
-  ThreadObserver::Mock observer;
-  EXPECT_CALL(observer, OnSuccess()).Times(0);
-  EXPECT_CALL(observer, OnError(_)).Times(1);
+  TestThreadObserver observer;
 
   Common::Thread thread(std::function<void()>(ThrowsException), &observer);
   thread.Join();
+  EXPECT_EQ(observer.OnSuccessCallCount, 0);
+  EXPECT_EQ(observer.OnErrorCallCount, 1);
 }
 
