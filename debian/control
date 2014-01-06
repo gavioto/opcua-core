@@ -1,6 +1,6 @@
 Source: libopcuacore
 Priority: extra
-Maintainer: treww <rykovanov.as@gmail.com>
+Maintainer: Alexander Rykovanov <rykovanov.as@gmail.com>
 Build-Depends: debhelper (>= 8.0.0), autotools-dev
 Standards-Version: 3.9.4
 Section: libs
