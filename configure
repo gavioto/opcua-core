@@ -636,6 +636,7 @@ ac_subst_vars='am__EXEEXT_FALSE
 am__EXEEXT_TRUE
 LTLIBOBJS
 LIBOBJS
+UAMAPPINGS_INCLUDES
 GMOCK_INCLUDES
 GMOCK_LIB
 GTEST_INCLUDES
@@ -769,6 +770,7 @@ with_sysroot
 enable_libtool_lock
 with_gtest
 with_gmock
+with_uamappings
 '
       ac_precious_vars='build_alias
 host_alias
@@ -1419,6 +1421,7 @@ Optional Packages:
                         (or the compiler's sysroot if not specified).
   --with-gtest=DIR        defines path to gtest root directory
   --with-gmock=DIR        defines path to gmock root directory
+  --with-uamappings=DIR   defines path to opcua-mappings root directory
 
 Some influential environment variables:
   CXX         C++ compiler command
@@ -15218,6 +15221,19 @@ else
 
 
 fi
+
+
+
+# Check whether --with-uamappings was given.
+if test "${with_uamappings+set}" = set; then :
+  withval=$with_uamappings;
+              UAMAPPINGS_INCLUDES=-I$with_uamappings/include
+
+              { $as_echo "$as_me:${as_lineno-$LINENO}: opcuamappings path: $with_uamappings" >&5
+$as_echo "$as_me: opcuamappings path: $with_uamappings" >&6;}
+
+fi
+
 
 
 

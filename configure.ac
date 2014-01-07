@@ -45,6 +45,16 @@ AC_ARG_WITH([gmock],
               AC_SUBST([GMOCK_LIB], [-lgmock])
            ])
 
+AC_ARG_WITH([uamappings], 
+            [AS_HELP_STRING([--with-uamappings=DIR], [defines path to opcua-mappings root directory])],
+            [ 
+              AC_SUBST([UAMAPPINGS_INCLUDES], [-I$with_uamappings/include])
+              AC_MSG_NOTICE([opcuamappings path: $with_uamappings]) 
+            ], 
+            [
+           ])
+
+
 
 #################################################################
 AC_CONFIG_FILES([Makefile libopcuacore.pc])
