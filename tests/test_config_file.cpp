@@ -16,7 +16,6 @@
 using namespace testing;
 
 TEST(ModulesConfiguration, ParsesConfigurationFile)
-//void a()
 {
   Common::ModulesConfiguration modules = Common::ParseConfiguration("./tests/configs/test.xml");
   ASSERT_EQ(modules.size(), 1);
@@ -40,9 +39,7 @@ TEST(ModulesConfiguration, ParsesConfigurationFile)
   ASSERT_EQ(module.Parameters.Groups[0].Parameters[1].Value, "anonymous");
 }
 
-
 TEST(ModulesConfiguration, SavesConfigurationFile)
-//void b()
 {
   Common::ModuleConfiguration addon;
   addon.ID = "test_addon";
@@ -72,4 +69,11 @@ TEST(ModulesConfiguration, SavesConfigurationFile)
   ASSERT_EQ(config.Parameters.Groups[0].Parameters.size(), 1);
   ASSERT_EQ(config.Parameters.Groups[0].Parameters[0].Name, "parameter");
   ASSERT_EQ(config.Parameters.Groups[0].Parameters[0].Value, "value");
+}
+
+TEST(ModulesConfiguration, ParsesConfigurationFilesInDirectory)
+{
+  Common::ModulesConfiguration modules = Common::ParseConfigurationFiles("./tests/configs");
+  ASSERT_EQ(modules.size(), 1);
+  ASSERT_EQ(modules[0].ID, "child_module");
 }

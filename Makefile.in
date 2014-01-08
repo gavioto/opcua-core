@@ -121,9 +121,6 @@ am_libopcuacore_la_OBJECTS = libopcuacore_la-application.lo \
 	libopcuacore_la-exception.lo libopcuacore_la-common_errors.lo \
 	libopcuacore_la-socket_channel.lo
 libopcuacore_la_OBJECTS = $(am_libopcuacore_la_OBJECTS)
-libopcuacore_la_LINK = $(LIBTOOL) --tag=CXX $(AM_LIBTOOLFLAGS) \
-	$(LIBTOOLFLAGS) --mode=link $(CXXLD) $(AM_CXXFLAGS) \
-	$(CXXFLAGS) $(libopcuacore_la_LDFLAGS) $(LDFLAGS) -o $@
 am__EXEEXT_1 = common_gtest$(EXEEXT) common_test$(EXEEXT)
 am_common_gtest_OBJECTS = common_gtest-test_addon_manager.$(OBJEXT) \
 	common_gtest-test_config_file.$(OBJEXT) \
@@ -237,7 +234,7 @@ INSTALL_STRIP_PROGRAM = @INSTALL_STRIP_PROGRAM@
 LD = @LD@
 LDFLAGS = @LDFLAGS@
 LIBOBJS = @LIBOBJS@
-LIBS = -lboost_system
+LIBS = -lboost_system -lboost_filesystem -lxml2 -lpthread -ldl
 LIBTOOL = @LIBTOOL@
 LIPO = @LIPO@
 LN_S = @LN_S@
@@ -318,6 +315,7 @@ target_alias = @target_alias@
 top_build_prefix = @top_build_prefix@
 top_builddir = @top_builddir@
 top_srcdir = @top_srcdir@
+COMMON_INCLUDES = -I$(top_srcdir) -I$(top_srcdir)/src -I$(top_srcdir)/include -I/usr/include/libxml2 
 opcincludedir = $(includedir)/opc
 opcuaincludedir = $(opcincludedir)/ua
 opcuainclude_HEADERS = \
@@ -368,17 +366,16 @@ libopcuacore_la_SOURCES = \
                   src/common/common_errors.cpp \
                   src/socket_channel.cpp
 
-libopcuacore_la_CPPFLAGS = -I$(top_srcdir) -I$(top_srcdir)/include -I/usr/include/libxml2
-libopcuacore_la_LDFLAGS = -ldl -lpthread -lxml2 
+libopcuacore_la_CPPFLAGS = $(COMMON_INCLUDES)
 CLEANFILES = libtest_dynamic_addon.so test_dynamic_addon.o test_config.xml
 common_test_SOURCES = \
                   tests/common/error_test.cpp \
                   tests/common/main.cpp \
                   tests/common/value_test.cpp
 
-common_test_CPPFLAGS = -I$(top_srcdir) -I$(top_srcdir)/include $(GTEST_INCLUDES)
+common_test_CPPFLAGS = $(COMMON_INCLUDES) $(GTEST_INCLUDES)
 common_test_LDADD = libopcuacore.la
-common_test_LDFLAGS = -lcppunit -ldl
+common_test_LDFLAGS = -lcppunit
 common_gtest_SOURCES = \
   tests/test_addon_manager.cpp \
   tests/test_config_file.cpp \
@@ -389,9 +386,9 @@ common_gtest_SOURCES = \
   tests/test_uri.cpp \
   tests/common/thread_test.cpp
 
-common_gtest_CPPFLAGS = -I/usr/include/libxml2 -I$(top_srcdir) -I$(top_srcdir)/include $(GTEST_INCLUDES)
+common_gtest_CPPFLAGS = $(COMMON_INCLUDES) $(GTEST_INCLUDES)
 common_gtest_LDADD = libopcuacore.la
-common_gtest_LDFLAGS = -lxml2 -lpthread -ldl -L$(top_builddir) $(GTEST_LIB) $(GTEST_MAIN_LIB) $(GMOCK_LIB) -no-undefined
+common_gtest_LDFLAGS = $(GTEST_LIB) $(GTEST_MAIN_LIB) $(GMOCK_LIB) -no-undefined
 EXTRA_DIST = \
   tests/configs/test.xml \
   debian make_deb.sh
@@ -489,7 +486,7 @@ clean-libLTLIBRARIES:
 	  rm -f "$${dir}/so_locations"; \
 	done
 libopcuacore.la: $(libopcuacore_la_OBJECTS) $(libopcuacore_la_DEPENDENCIES) $(EXTRA_libopcuacore_la_DEPENDENCIES) 
-	$(libopcuacore_la_LINK) -rpath $(libdir) $(libopcuacore_la_OBJECTS) $(libopcuacore_la_LIBADD) $(LIBS)
+	$(CXXLINK) -rpath $(libdir) $(libopcuacore_la_OBJECTS) $(libopcuacore_la_LIBADD) $(LIBS)
 
 clean-checkPROGRAMS:
 	@list='$(check_PROGRAMS)'; test -n "$$list" || exit 0; \
@@ -1331,7 +1328,7 @@ uninstall-am: uninstall-addonsHEADERS uninstall-commonHEADERS \
 
 
 test_dynamic_addon.o: tests/test_dynamic_addon.cpp
-	$(CC) -std=c++0x -I$(top_srcdir)/src -I$(top_srcdir)/include -fPIC -g -c -Wall tests/test_dynamic_addon.cpp 
+	$(CC) -std=c++0x -fPIC -g -c -Wall tests/test_dynamic_addon.cpp 
 
 libtest_dynamic_addon.so: test_dynamic_addon.o
 	$(CC) -std=c++0x -g -Wall -ldl -shared -o libtest_dynamic_addon.so test_dynamic_addon.o

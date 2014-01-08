@@ -15,6 +15,7 @@
 #include <boost/foreach.hpp>
 #include <boost/property_tree/ptree.hpp>
 #include <boost/property_tree/xml_parser.hpp>
+#include <boost/filesystem.hpp>
 #include <iostream>
 
 using boost::property_tree::ptree;
@@ -99,6 +100,17 @@ Common::ModulesConfiguration Common::ParseConfiguration(const std::string& confi
     }
   }
   return configuration;
+}
+
+Common::ModulesConfiguration Common::ParseConfigurationFiles(const std::string& directory)
+{
+  using namespace boost::filesystem;
+  Common::ModulesConfiguration modules;
+  std::for_each(directory_iterator(directory), directory_iterator(), [&modules](const directory_entry& entry){
+    Common::ModulesConfiguration tmp = Common::ParseConfiguration(entry.path().native());
+    modules.insert(modules.end(), tmp.begin(), tmp.end());
+  });
+  return modules;
 }
 
 

@@ -4,8 +4,8 @@
 # http://www.gnu.org/licenses/lgpl.html)
 #
 
-LIBS = -lboost_system
-
+LIBS = -lboost_system -lboost_filesystem -lxml2 -lpthread -ldl
+COMMON_INCLUDES = -I$(top_srcdir) -I$(top_srcdir)/src -I$(top_srcdir)/include -I/usr/include/libxml2 
 
 opcincludedir = $(includedir)/opc
 opcuaincludedir = $(opcincludedir)/ua
@@ -58,11 +58,10 @@ libopcuacore_la_SOURCES = \
                   src/common/common_errors.cpp \
                   src/socket_channel.cpp
 
-libopcuacore_la_CPPFLAGS = -I$(top_srcdir) -I$(top_srcdir)/include -I/usr/include/libxml2
-libopcuacore_la_LDFLAGS = -ldl -lpthread -lxml2 
+libopcuacore_la_CPPFLAGS = $(COMMON_INCLUDES)
 
 test_dynamic_addon.o: tests/test_dynamic_addon.cpp
-	$(CC) -std=c++0x -I$(top_srcdir)/src -I$(top_srcdir)/include -fPIC -g -c -Wall tests/test_dynamic_addon.cpp 
+	$(CC) -std=c++0x -fPIC -g -c -Wall tests/test_dynamic_addon.cpp 
 
 
 libtest_dynamic_addon.so: test_dynamic_addon.o
@@ -82,9 +81,9 @@ common_test_SOURCES = \
                   tests/common/value_test.cpp
 
 
-common_test_CPPFLAGS = -I$(top_srcdir) -I$(top_srcdir)/include $(GTEST_INCLUDES)
+common_test_CPPFLAGS = $(COMMON_INCLUDES) $(GTEST_INCLUDES)
 common_test_LDADD = libopcuacore.la
-common_test_LDFLAGS = -lcppunit -ldl
+common_test_LDFLAGS = -lcppunit
 
 common_gtest_SOURCES = \
   tests/test_addon_manager.cpp \
@@ -96,9 +95,9 @@ common_gtest_SOURCES = \
   tests/test_uri.cpp \
   tests/common/thread_test.cpp
 
-common_gtest_CPPFLAGS =  -I/usr/include/libxml2 -I$(top_srcdir) -I$(top_srcdir)/include $(GTEST_INCLUDES)
+common_gtest_CPPFLAGS =  $(COMMON_INCLUDES) $(GTEST_INCLUDES)
 common_gtest_LDADD = libopcuacore.la
-common_gtest_LDFLAGS = -lxml2 -lpthread -ldl -L$(top_builddir) $(GTEST_LIB) $(GTEST_MAIN_LIB) $(GMOCK_LIB) -no-undefined
+common_gtest_LDFLAGS = $(GTEST_LIB) $(GTEST_MAIN_LIB) $(GMOCK_LIB) -no-undefined
 
 EXTRA_DIST = \
   tests/configs/test.xml \
@@ -115,4 +114,3 @@ clean-local:
 
 dist-deb:
 	$(top_srcdir)/make_deb.sh
-

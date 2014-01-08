@@ -31,5 +31,7 @@ namespace Common
   ModulesConfiguration ParseConfiguration(const std::string& configPath);
   void SaveConfiguration(const ModulesConfiguration& configuration, const std::string& configPath);
 
+  ModulesConfiguration ParseConfigurationFiles(const std::string& directory);
+
 }
 
