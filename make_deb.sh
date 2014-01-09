@@ -1,5 +1,6 @@
 #!/bin/sh
 tar -xvf libopcuacore-${VERSION}.tar.gz
 cd libopcuacore-${VERSION}
-dpkg-buildpackage -rfakeroot
+dh_make -y -l -c lgpl3 -e rykovanov.as@gmail.com -f ../libopcuacore-${VERSION}.tar.gz
+dpkg-buildpackage -rfakeroot -nc -F
 

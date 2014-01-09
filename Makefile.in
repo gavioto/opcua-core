@@ -1343,9 +1343,7 @@ clean-local:
 	rm -rvf libopcuacore*$(VERSION)*
 
 dist-deb: dist
-	tar -xvf libopcuacore-$(VERSION).tar.gz
-	cd libopcuacore-$(VERSION)
-	dpkg-buildpackage -rfakeroot
+	VERSION=$(VERSION) $(top_srcdir)/make_deb.sh
 
 # Tell versions [3.59,3.63) of GNU make to not export all variables.
 # Otherwise a system limit (for SysV at least) may be exceeded.

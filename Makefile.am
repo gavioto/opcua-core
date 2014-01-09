@@ -113,7 +113,5 @@ clean-local:
 	rm -rvf libopcuacore*$(VERSION)*
 
 dist-deb: dist
-	tar -xvf libopcuacore-$(VERSION).tar.gz
-	cd libopcuacore-$(VERSION)
-	dpkg-buildpackage -rfakeroot
+	VERSION=$(VERSION) $(top_srcdir)/make_deb.sh
 
