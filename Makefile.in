@@ -66,9 +66,9 @@ DIST_COMMON = README $(addons_HEADERS) $(am__configure_deps) \
 	$(common_HEADERS) $(opcuainclude_HEADERS) \
 	$(srcdir)/Makefile.am $(srcdir)/Makefile.in \
 	$(srcdir)/config.h.in $(srcdir)/libopcuacore.pc.in \
-	$(top_srcdir)/configure AUTHORS COPYING ChangeLog INSTALL NEWS \
-	ar-lib config.guess config.sub depcomp install-sh ltmain.sh \
-	missing
+	$(top_srcdir)/configure $(top_srcdir)/debian/changelog.in \
+	AUTHORS COPYING ChangeLog INSTALL NEWS ar-lib config.guess \
+	config.sub depcomp install-sh ltmain.sh missing
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
 am__aclocal_m4_deps = $(top_srcdir)/configure.ac
 am__configure_deps = $(am__aclocal_m4_deps) $(CONFIGURE_DEPENDENCIES) \
@@ -77,7 +77,7 @@ am__CONFIG_DISTCLEAN_FILES = config.status config.cache config.log \
  configure.lineno config.status.lineno
 mkinstalldirs = $(install_sh) -d
 CONFIG_HEADER = config.h
-CONFIG_CLEAN_FILES = libopcuacore.pc
+CONFIG_CLEAN_FILES = libopcuacore.pc debian/changelog
 CONFIG_CLEAN_VPATH_FILES =
 am__vpath_adj_setup = srcdirstrip=`echo "$(srcdir)" | sed 's|.|.|g'`;
 am__vpath_adj = case $$p in \
@@ -257,10 +257,12 @@ PACKAGE_URL = @PACKAGE_URL@
 PACKAGE_VERSION = @PACKAGE_VERSION@
 PATH_SEPARATOR = @PATH_SEPARATOR@
 RANLIB = @RANLIB@
+RELEASE_DATE = @RELEASE_DATE@
 SED = @SED@
 SET_MAKE = @SET_MAKE@
 SHELL = @SHELL@
 STRIP = @STRIP@
+UAMAPPINGS_INCLUDES = @UAMAPPINGS_INCLUDES@
 VERSION = @VERSION@
 abs_builddir = @abs_builddir@
 abs_srcdir = @abs_srcdir@
@@ -315,7 +317,7 @@ target_alias = @target_alias@
 top_build_prefix = @top_build_prefix@
 top_builddir = @top_builddir@
 top_srcdir = @top_srcdir@
-COMMON_INCLUDES = -I$(top_srcdir) -I$(top_srcdir)/src -I$(top_srcdir)/include -I/usr/include/libxml2 
+COMMON_INCLUDES = -I$(top_srcdir) -I$(top_srcdir)/src -I$(top_srcdir)/include -I/usr/include/libxml2 $(UAMAPPINGS_INCLUDES)
 opcincludedir = $(includedir)/opc
 opcuaincludedir = $(opcincludedir)/ua
 opcuainclude_HEADERS = \
@@ -452,6 +454,8 @@ $(srcdir)/config.h.in:  $(am__configure_deps)
 distclean-hdr:
 	-rm -f config.h stamp-h1
 libopcuacore.pc: $(top_builddir)/config.status $(srcdir)/libopcuacore.pc.in
+	cd $(top_builddir) && $(SHELL) ./config.status $@
+debian/changelog: $(top_builddir)/config.status $(top_srcdir)/debian/changelog.in
 	cd $(top_builddir) && $(SHELL) ./config.status $@
 install-libLTLIBRARIES: $(lib_LTLIBRARIES)
 	@$(NORMAL_INSTALL)
@@ -1328,7 +1332,7 @@ uninstall-am: uninstall-addonsHEADERS uninstall-commonHEADERS \
 
 
 test_dynamic_addon.o: tests/test_dynamic_addon.cpp
-	$(CC) -std=c++0x -fPIC -g -c -Wall tests/test_dynamic_addon.cpp 
+	$(CC) -std=c++0x $(COMMON_INCLUDES) -fPIC -g -c -Wall tests/test_dynamic_addon.cpp 
 
 libtest_dynamic_addon.so: test_dynamic_addon.o
 	$(CC) -std=c++0x -g -Wall -ldl -shared -o libtest_dynamic_addon.so test_dynamic_addon.o
@@ -1338,8 +1342,10 @@ all-local: libtest_dynamic_addon.so
 clean-local:
 	rm -rvf libopcuacore*$(VERSION)*
 
-dist-deb:
-	$(top_srcdir)/make_deb.sh
+dist-deb: dist
+	tar -xvf libopcuacore-$(VERSION).tar.gz
+	cd libopcuacore-$(VERSION)
+	dpkg-buildpackage -rfakeroot
 
 # Tell versions [3.59,3.63) of GNU make to not export all variables.
 # Otherwise a system limit (for SysV at least) may be exceeded.

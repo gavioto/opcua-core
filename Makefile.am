@@ -5,7 +5,7 @@
 #
 
 LIBS = -lboost_system -lboost_filesystem -lxml2 -lpthread -ldl
-COMMON_INCLUDES = -I$(top_srcdir) -I$(top_srcdir)/src -I$(top_srcdir)/include -I/usr/include/libxml2 
+COMMON_INCLUDES = -I$(top_srcdir) -I$(top_srcdir)/src -I$(top_srcdir)/include -I/usr/include/libxml2 $(UAMAPPINGS_INCLUDES)
 
 opcincludedir = $(includedir)/opc
 opcuaincludedir = $(opcincludedir)/ua
@@ -61,7 +61,7 @@ libopcuacore_la_SOURCES = \
 libopcuacore_la_CPPFLAGS = $(COMMON_INCLUDES)
 
 test_dynamic_addon.o: tests/test_dynamic_addon.cpp
-	$(CC) -std=c++0x -fPIC -g -c -Wall tests/test_dynamic_addon.cpp 
+	$(CC) -std=c++0x $(COMMON_INCLUDES) -fPIC -g -c -Wall tests/test_dynamic_addon.cpp 
 
 
 libtest_dynamic_addon.so: test_dynamic_addon.o
@@ -112,5 +112,8 @@ pkgconfig_DATA = libopcuacore.pc
 clean-local:
 	rm -rvf libopcuacore*$(VERSION)*
 
-dist-deb:
-	$(top_srcdir)/make_deb.sh
+dist-deb: dist
+	tar -xvf libopcuacore-$(VERSION).tar.gz
+	cd libopcuacore-$(VERSION)
+	dpkg-buildpackage -rfakeroot
+

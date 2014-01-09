@@ -5,7 +5,7 @@
 # http://www.gnu.org/licenses/lgpl.html)
 #
 
-AC_INIT([libopcuacore], [0.1.2], [rykovanov.as@gmail.com])
+AC_INIT([libopcuacore], [0.1.3], [rykovanov.as@gmail.com])
 AC_CONFIG_AUX_DIR([.])
 AC_CONFIG_SRCDIR([src/common/addons_core/addon_manager.cpp])
 AM_INIT_AUTOMAKE([-Wall -Werror])
@@ -45,9 +45,20 @@ AC_ARG_WITH([gmock],
               AC_SUBST([GMOCK_LIB], [-lgmock])
            ])
 
+AC_ARG_WITH([uamappings], 
+            [AS_HELP_STRING([--with-uamappings=DIR], [defines path to opcua-mappings root directory])],
+            [ 
+              AC_SUBST([UAMAPPINGS_INCLUDES], [-I$with_uamappings/include])
+              AC_MSG_NOTICE([opcuamappings path: $with_uamappings]) 
+            ], 
+            [
+           ])
+
+
+AC_SUBST([RELEASE_DATE], [$(date -R)])
 
 #################################################################
-AC_CONFIG_FILES([Makefile libopcuacore.pc])
+AC_CONFIG_FILES([Makefile libopcuacore.pc debian/changelog])
 
 AC_OUTPUT
 
