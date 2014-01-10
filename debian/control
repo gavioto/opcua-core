@@ -9,13 +9,13 @@ Vcs-Git: https://github.com/treww/opcua-core.git
 
 Package: libopcuacore-dev
 Section: libdevel
-Architecture: any
-Depends: libopcuacore (= ${binary:Version}), libboost-system-dev, opcuamappings-dev (>= 0.2.0)
+Architecture: amd64 i386
+Depends: libopcuacore (= ${binary:Version}), libboost-system-dev, libboost-filesystem-dev, opcuamappings-dev (>= 0.2.0)
 Description: OPCUA core infrastructure developer files.
 
 Package: libopcuacore
 Section: libs
-Architecture: any
-Depends: ${shlibs:Depends}, ${misc:Depends}, libboost-system-dev, opcuamappings (>= 0.2.0)
+Architecture: amd64 i386
+Depends: ${shlibs:Depends}, ${misc:Depends}, opcuamappings (>= 0.2.0)
 Description: OPCUA core infrastructure.
 
