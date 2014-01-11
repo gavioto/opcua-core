@@ -81,7 +81,7 @@ common_test_SOURCES = \
                   tests/common/value_test.cpp
 
 
-common_test_CPPFLAGS = $(COMMON_INCLUDES) $(GTEST_INCLUDES)
+common_test_CPPFLAGS = $(COMMON_INCLUDES) $(GTEST_INCLUDES) $(GMOCK_INCLUDES)
 common_test_LDADD = libopcuacore.la
 common_test_LDFLAGS = -lcppunit
 
@@ -95,7 +95,7 @@ common_gtest_SOURCES = \
   tests/test_uri.cpp \
   tests/common/thread_test.cpp
 
-common_gtest_CPPFLAGS =  $(COMMON_INCLUDES) $(GTEST_INCLUDES)
+common_gtest_CPPFLAGS =  $(COMMON_INCLUDES) $(GTEST_INCLUDES) $(GMOCK_INCLUDES)
 common_gtest_LDADD = libopcuacore.la
 common_gtest_LDFLAGS = $(GTEST_LIB) $(GTEST_MAIN_LIB) $(GMOCK_LIB) -no-undefined
 
