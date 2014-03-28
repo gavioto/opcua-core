@@ -107,8 +107,12 @@ Common::ModulesConfiguration Common::ParseConfigurationFiles(const std::string& 
   using namespace boost::filesystem;
   Common::ModulesConfiguration modules;
   std::for_each(directory_iterator(directory), directory_iterator(), [&modules](const directory_entry& entry){
+  if  (entry.path().filename().extension() == ".config")
+  {
+    std::cout << "Parsing config file: " << entry.path().native() << std::endl;
     Common::ModulesConfiguration tmp = Common::ParseConfiguration(entry.path().native());
     modules.insert(modules.end(), tmp.begin(), tmp.end());
+  }
   });
   return modules;
 }
