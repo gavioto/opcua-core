@@ -18,47 +18,32 @@
  ******************************************************************************/
 
 
-#include <string.h>
-#include <sstream>
 
-#include <opc/common/addons_core/addon_manager.h>
 #include <opc/common/node.h>
-#include <opc/ua/computer.h>
-#include <opc/ua/node_classes.h>
-
-#include <stdexcept>
-
-
-
 
 
 namespace OpcUa
 {
-        DataValue Node::Read(OpcUa::AttributeID attr)
-        {
-            return ReadVector(attr).front();
-        }
-
-        std::vector<DataValue> Node::ReadVector(OpcUa::AttributeID attr)
+        Variant Node::Read(OpcUa::AttributeID attr)
         {
             ReadParameters params;
             AttributeValueID attribute;
             attribute.Node = this->NodeId;
             attribute.Attribute = attr;
             params.AttributesToRead.push_back(attribute);
-            return server->Attributes()->Read(params);
+            DataValue dv =  server->Attributes()->Read(params).front();
+            return dv.Value;
         }
 
         Variant Node::ReadValue()
         {
-            return Read(OpcUa::AttributeID::VALUE).Value;
+            return Read(OpcUa::AttributeID::VALUE);
         }
 
-        DataValue Node::ReadDataType()
+        Variant Node::ReadDataType()
         {
             return Read(OpcUa::AttributeID::DATA_TYPE);
         }
-
 
         std::vector<StatusCode> Node::Write(OpcUa::AttributeID const attr, Variant value)
         {

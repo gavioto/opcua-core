@@ -19,14 +19,11 @@
 
 #ifndef NODE_H
 #define NODE_H
+
 #include <sstream>
 
-#include <opc/ua/channel.h>
 #include <opc/ua/computer.h>
-#include <opc/common/addons_core/addon_manager.h>
 
-#include <opc/ua/protocol/binary/stream.h>
-#include <opc/ua/protocol/session.h>
 
 
 namespace OpcUa
@@ -46,15 +43,15 @@ namespace OpcUa
 
             //The tree common Opc-Ua methods
             std::vector<Node> Browse( OpcUa::ReferenceID refid=OpcUa::ReferenceID::HierarchicalReferences);
-            DataValue Read(OpcUa::AttributeID const attr);
-            std::vector<DataValue> ReadVector(OpcUa::AttributeID const attr);;
+            Variant Read(OpcUa::AttributeID const attr);
+            //std::vector<DataValue> ReadVector(OpcUa::AttributeID const attr);;
             std::vector<StatusCode> Write(OpcUa::AttributeID const attr, Variant val);
             //void Write(OpcUa::AttributeID const attr, const std::vector<Variant>);
 
             //Helper methods
             void WriteValue(Variant variant);
             Variant ReadValue();
-            DataValue ReadDataType();
+            Variant ReadDataType();
             //std::vector<DataValue> ReadValueVector();
             void SetBrowseNameCache(QualifiedName browsename){this->browseName= browsename;}  
             void WriteBrowseName(QualifiedName browsename); 
@@ -62,12 +59,12 @@ namespace OpcUa
             Node FindChildNode(std::string browsename, ushort ns=0);
             Node FindChildNode(QualifiedName browsename);
 
-            void setProperty(std::string browsename, Variant val);
-            void setPropertyValue(ushort ns, std::string browsename, Variant val);
-            Variant getPropertyValue (std::string browsename);
-            Variant getPropertyValue (std::string browsename, ushort ns);
-            std::string ToString() const; 
+            //void WritePropertyChildValue(QualifiedName browsename, Variant val);
+            //void WritePropertyChildValue(ushort ns, std::string browsename, Variant val);
+            //Variant ReadPropertyChildValue (std::string browsename, ushort ns=0);
+            //Variant ReadPropertyChildValue (QualifiedName browsename);
 
+            std::string ToString() const; 
             explicit operator bool() const {return !mIsNull;}
 
 
