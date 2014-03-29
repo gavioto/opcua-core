@@ -1,5 +1,5 @@
 /******************************************************************************
- *   Copyright (C) 2014-2014 by Sintef Raufoss Manufacturing                  *
+ *   Copyright (C) 2014-2014 Olivier Roulet-Dubonnet                  *
  *   olivier.roulet@gmail.com                  *
  *                                          *
  *   This library is free software; you can redistribute it and/or modify     *

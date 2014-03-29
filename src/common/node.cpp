@@ -1,5 +1,5 @@
 /******************************************************************************
- *   Copyright (C) 2014-2014 by Sintef Raufoss Manufacturing                  *
+ *   Copyright (C) 2014-2014 Olivier Roulet-Dubonnet                  *
  *   olivier.roulet@gmail.com                  *
  *                                          *
  *   This library is free software; you can redistribute it and/or modify     *
@@ -79,6 +79,7 @@ namespace OpcUa
               for (auto refIt : refs)
               {
                   Node node(server, refIt.TargetNodeID);
+                  std::cout << "Creating node with borwsename: " << refIt.BrowseName.NamespaceIndex << refIt.BrowseName.Name << std::endl;
                   node.SetBrowseNameCache(refIt.BrowseName);
                   nodes.push_back(node);
               }
