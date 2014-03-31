@@ -59,8 +59,8 @@ namespace OpcUa
       std::vector<Node> GetChildren() {return Browse();}
       std::vector<Node> GetVariables() {return Browse(OpcUa::ReferenceID::HasComponent);} //Not correct should filter by variable type
 
-      Node FindChildNode(std::string browsename, ushort ns=0);
-      Node FindChildNode(QualifiedName browsename);
+      Node GetChildNode(std::string browsename, ushort ns=0);
+      Node GetChildNode(QualifiedName browsename);
 
       std::string ToString() const; 
       explicit operator bool() const {return !mIsNull;}

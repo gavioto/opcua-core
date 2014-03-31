@@ -89,15 +89,40 @@ namespace OpcUa
   }
 
 
-  Node Node::FindChildNode(std::string browsename, ushort ns)
+  Node Node::GetChildNode(std::string browsename, ushort ns)
   {
     QualifiedName qn(ns, browsename);
-    return FindChildNode(qn);
+    return GetChildNode(qn);
   }
 
-  Node Node::FindChildNode(QualifiedName browsename)
+  Node Node::GetChildNode(QualifiedName browsename)
   {
-    //FIXME: Should be implemented at lower level using filter browsing and breaking browsing
+    //FIXME: Should be implemented at lower level using translatebrowsepath or filters and browsing 
+    RelativePathElement el;
+    el.TargetName = browsename;
+    std::vector<RelativePathElement> rpath;
+    rpath.push_back(el);
+    BrowsePath path;
+    path.Path.Elements = rpath;
+    path.StartingNode = this->NodeId;
+    std::vector<BrowsePath> paths;
+    paths.push_back(path);
+    TranslateBrowsePathsParameters params;
+    params.BrowsePaths = paths;
+
+    std::vector<BrowsePathResult> result = server->Views()->TranslateBrowsePathToNodeIds(params);
+
+    if ( result.front().Status == OpcUa::StatusCode::Good )
+    {
+      NodeID node =result.front().Targets.front().Node ;
+      return Node(server, node);
+    }
+    else
+    {
+      return Node(server); //Null node
+    }
+
+/*
     for (Node node : Browse())
     {
       std::cout << "Comparing: " <<node.GetBrowseName().Name << " to " << browsename.Name << std::endl;
@@ -107,6 +132,7 @@ namespace OpcUa
       }
     }
     return Node(server); //Null node
+    */
   }
 
   std::string Node::ToString() const
