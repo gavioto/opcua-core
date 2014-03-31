@@ -31,6 +31,7 @@ namespace OpcUa
     public:
       virtual std::vector<ReferenceDescription> Browse(const OpcUa::NodesQuery& query) const = 0;
       virtual std::vector<ReferenceDescription> BrowseNext() const = 0;
+      virtual std::vector<BrowsePathResult> TranslateBrowsePathToNodeIds(TranslateBrowsePathsParameters params) const = 0;
     };
 
   } // namespace Remote
