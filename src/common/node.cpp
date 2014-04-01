@@ -88,8 +88,7 @@ namespace OpcUa
     return nodes;
   }
 
-
-  Node Node::GetChildNode(std::string browsename, ushort ns)
+  Node Node::GetChildNode(ushort ns, std::string browsename)
   {
     QualifiedName qn(ns, browsename);
     return GetChildNode(qn);
@@ -97,18 +96,41 @@ namespace OpcUa
 
   Node Node::GetChildNode(QualifiedName browsename)
   {
-    //FIXME: Should be implemented at lower level using translatebrowsepath or filters and browsing 
-    RelativePathElement el;
-    el.TargetName = browsename;
+    std::vector<QualifiedName> path;
+    path.push_back(browsename);
+    return GetChildNode(path);
+  }
+
+ Node Node::GetChildNode(std::vector<std::string> const path)
+  {
+    std::vector<QualifiedName> vec;
+    for (std::string str: path)
+    {
+      QualifiedName qname;
+      qname.NamespaceIndex = this->browseName.NamespaceIndex;
+      qname.Name = str;
+      vec.push_back(qname);
+    }
+    return GetChildNode(vec);
+  }
+
+
+  Node Node::GetChildNode(const std::vector<QualifiedName> path)
+  {
     std::vector<RelativePathElement> rpath;
-    rpath.push_back(el);
-    BrowsePath path;
-    path.Path.Elements = rpath;
-    path.StartingNode = this->NodeId;
-    std::vector<BrowsePath> paths;
-    paths.push_back(path);
+    for (QualifiedName qname: path)
+    {
+      RelativePathElement el;
+      el.TargetName = qname;
+      rpath.push_back(el);
+    }
+    BrowsePath bpath;
+    bpath.Path.Elements = rpath;
+    bpath.StartingNode = this->NodeId;
+    std::vector<BrowsePath> bpaths;
+    bpaths.push_back(bpath);
     TranslateBrowsePathsParameters params;
-    params.BrowsePaths = paths;
+    params.BrowsePaths = bpaths;
 
     std::vector<BrowsePathResult> result = server->Views()->TranslateBrowsePathToNodeIds(params);
 
@@ -121,18 +143,6 @@ namespace OpcUa
     {
       return Node(server); //Null node
     }
-
-/*
-    for (Node node : Browse())
-    {
-      std::cout << "Comparing: " <<node.GetBrowseName().Name << " to " << browsename.Name << std::endl;
-      if (node.GetBrowseName() == browsename)
-      {
-        return node;
-      }
-    }
-    return Node(server); //Null node
-    */
   }
 
   std::string Node::ToString() const

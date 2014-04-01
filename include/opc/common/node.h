@@ -38,6 +38,7 @@ namespace OpcUa
       }
       Node( const std::shared_ptr<OpcUa::Remote::Computer> server){ this->server = server; mIsNull = true; };
       //~Node(){};
+
       bool isNull(){ return mIsNull; }
       NodeID GetNodeId() {return NodeId;}
 
@@ -47,20 +48,25 @@ namespace OpcUa
       //std::vector<DataValue> ReadVector(OpcUa::AttributeID const attr);;
       std::vector<StatusCode> Write(OpcUa::AttributeID const attr, Variant val);
 
+      Node GetChildNode(std::vector<QualifiedName> const path);
+
       //Helper methods
+      Node GetChildNode(ushort ns, std::string const browsename);
+      Node GetChildNode(QualifiedName const browsename);
+      Node GetChildNode(std::vector<std::string> const path); //assume namespace is same as parent
+      Node GetChildNode(std::string browsename) {return GetChildNode(this->browseName.NamespaceIndex, browsename);}
+
       void WriteValue(Variant variant);
       Variant ReadValue();
       Variant ReadDataType();
       //std::vector<DataValue> ReadValueVector();
-      void SetBrowseNameCache(QualifiedName browsename){this->browseName= browsename;}  
-      void WriteBrowseName(QualifiedName browsename); 
+      void SetBrowseNameCache(QualifiedName const browsename){this->browseName= browsename;}  
+      void WriteBrowseName(QualifiedName const browsename); 
       QualifiedName GetBrowseName() { return browseName; }
       std::vector<Node> GetProperties() {return Browse(OpcUa::ReferenceID::HasProperty);}
       std::vector<Node> GetChildren() {return Browse();}
       std::vector<Node> GetVariables() {return Browse(OpcUa::ReferenceID::HasComponent);} //Not correct should filter by variable type
 
-      Node GetChildNode(std::string browsename, ushort ns=0);
-      Node GetChildNode(QualifiedName browsename);
 
       std::string ToString() const; 
       explicit operator bool() const {return !mIsNull;}
