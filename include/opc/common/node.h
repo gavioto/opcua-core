@@ -31,37 +31,37 @@ namespace OpcUa
   class Node
   {
     public:
-      Node( const std::shared_ptr<OpcUa::Remote::Computer> server, const NodeID nodeid ) {
+      Node( const OpcUa::Remote::Computer::SharedPtr& server, const NodeID& nodeid ) {
         this->server = server;
         this->NodeId = nodeid;
         mIsNull = false;
       }
-      Node( const std::shared_ptr<OpcUa::Remote::Computer> server){ this->server = server; mIsNull = true; };
+      Node( const OpcUa::Remote::Computer::SharedPtr& server){ this->server = server; mIsNull = true; };
       //~Node(){};
 
       bool isNull(){ return mIsNull; }
       NodeID GetNodeId() {return NodeId;}
 
       //The tree common Opc-Ua methods
-      std::vector<Node> Browse( OpcUa::ReferenceID refid=OpcUa::ReferenceID::HierarchicalReferences);
-      Variant Read(OpcUa::AttributeID const attr);
+      std::vector<Node> Browse( const OpcUa::ReferenceID refid=OpcUa::ReferenceID::HierarchicalReferences);
+      Variant Read(const OpcUa::AttributeID attr);
       //std::vector<DataValue> ReadVector(OpcUa::AttributeID const attr);;
-      std::vector<StatusCode> Write(OpcUa::AttributeID const attr, Variant val);
+      std::vector<StatusCode> Write(const OpcUa::AttributeID attr, Variant &val);
 
-      Node GetChildNode(std::vector<QualifiedName> const path);
+      Node GetChildNode(std::vector<QualifiedName> const &path);
 
       //Helper methods
-      Node GetChildNode(ushort ns, std::string const browsename);
-      Node GetChildNode(QualifiedName const browsename);
-      Node GetChildNode(std::vector<std::string> const path); //assume namespace is same as parent
-      Node GetChildNode(std::string browsename) {return GetChildNode(this->browseName.NamespaceIndex, browsename);}
+      Node GetChildNode(ushort ns, const std::string &browsename);
+      Node GetChildNode(const QualifiedName &browsename);
+      Node GetChildNode(const std::vector<std::string> &path); //assume namespace is same as parent
+      Node GetChildNode(const std::string &browsename) {return GetChildNode(this->browseName.NamespaceIndex, browsename);}
 
-      void WriteValue(Variant variant);
+      void WriteValue(const Variant &variant);
       Variant ReadValue();
       Variant ReadDataType();
       //std::vector<DataValue> ReadValueVector();
-      void SetBrowseNameCache(QualifiedName const browsename){this->browseName= browsename;}  
-      void WriteBrowseName(QualifiedName const browsename); 
+      void SetBrowseNameCache(const QualifiedName &browsename){this->browseName= browsename;}  
+      void WriteBrowseName(const QualifiedName &browsename); 
       QualifiedName GetBrowseName() { return browseName; }
       std::vector<Node> GetProperties() {return Browse(OpcUa::ReferenceID::HasProperty);}
       std::vector<Node> GetChildren() {return Browse();}
@@ -73,7 +73,7 @@ namespace OpcUa
 
 
     private:
-      std::shared_ptr<OpcUa::Remote::Computer> server;
+      OpcUa::Remote::Computer::SharedPtr server;
       bool mIsNull = true;
       NodeID NodeId;
       QualifiedName browseName ;

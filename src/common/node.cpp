@@ -24,7 +24,7 @@
 
 namespace OpcUa
 {
-  Variant Node::Read(OpcUa::AttributeID attr)
+  Variant Node::Read(const OpcUa::AttributeID attr)
   {
     ReadParameters params;
     AttributeValueID attribute;
@@ -45,7 +45,7 @@ namespace OpcUa
     return Read(OpcUa::AttributeID::DATA_TYPE);
   }
 
-  std::vector<StatusCode> Node::Write(OpcUa::AttributeID const attr, Variant value)
+  std::vector<StatusCode> Node::Write(const OpcUa::AttributeID attr, Variant &value)
   {
     OpcUa::WriteValue attribute;
     attribute.Node = NodeId;
@@ -55,7 +55,7 @@ namespace OpcUa
   }
 
 
-  std::vector<Node> Node::Browse(OpcUa::ReferenceID refid)
+  std::vector<Node> Node::Browse(const OpcUa::ReferenceID refid)
   {
     OpcUa::BrowseDescription description;
     description.NodeToBrowse = this->NodeId;
@@ -79,7 +79,7 @@ namespace OpcUa
       for (auto refIt : refs)
       {
         Node node(server, refIt.TargetNodeID);
-        std::cout << "Creating node with borwsename: " << refIt.BrowseName.NamespaceIndex << refIt.BrowseName.Name << std::endl;
+        //std::cout << "Creating node with borwsename: " << refIt.BrowseName.NamespaceIndex << refIt.BrowseName.Name << std::endl;
         node.SetBrowseNameCache(refIt.BrowseName);
         nodes.push_back(node);
       }
@@ -88,20 +88,20 @@ namespace OpcUa
     return nodes;
   }
 
-  Node Node::GetChildNode(ushort ns, std::string browsename)
+  Node Node::GetChildNode(ushort ns, const std::string& browsename)
   {
     QualifiedName qn(ns, browsename);
     return GetChildNode(qn);
   }
 
-  Node Node::GetChildNode(QualifiedName browsename)
+  Node Node::GetChildNode(const QualifiedName& browsename)
   {
     std::vector<QualifiedName> path;
     path.push_back(browsename);
     return GetChildNode(path);
   }
 
- Node Node::GetChildNode(std::vector<std::string> const path)
+ Node Node::GetChildNode(const std::vector<std::string>& path)
   {
     std::vector<QualifiedName> vec;
     for (std::string str: path)
@@ -115,7 +115,7 @@ namespace OpcUa
   }
 
 
-  Node Node::GetChildNode(const std::vector<QualifiedName> path)
+  Node Node::GetChildNode(const std::vector<QualifiedName>& path)
   {
     std::vector<RelativePathElement> rpath;
     for (QualifiedName qname: path)
@@ -132,7 +132,7 @@ namespace OpcUa
     TranslateBrowsePathsParameters params;
     params.BrowsePaths = bpaths;
 
-    std::vector<BrowsePathResult> result = server->Views()->TranslateBrowsePathToNodeIds(params);
+    std::vector<BrowsePathResult> result = server->Views()->TranslateBrowsePathsToNodeIds(params);
 
     if ( result.front().Status == OpcUa::StatusCode::Good )
     {
