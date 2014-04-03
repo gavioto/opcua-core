@@ -39,30 +39,29 @@ namespace OpcUa
       Node( const OpcUa::Remote::Computer::SharedPtr& server){ this->server = server; mIsNull = true; };
       //~Node(){};
 
-      bool isNull(){ return mIsNull; }
-      NodeID GetNodeId() {return NodeId;}
+      bool isNull() const { return mIsNull; }
+      NodeID GetNodeId() const {return NodeId;}
 
-      //The tree common Opc-Ua methods
-      std::vector<Node> Browse( const OpcUa::ReferenceID refid=OpcUa::ReferenceID::HierarchicalReferences);
-      Variant Read(const OpcUa::AttributeID attr);
-      //std::vector<DataValue> ReadVector(OpcUa::AttributeID const attr);;
-      std::vector<StatusCode> Write(const OpcUa::AttributeID attr, Variant &val);
+      //The tree base Opc-Ua methods
+      std::vector<Node> Browse(OpcUa::ReferenceID refid=OpcUa::ReferenceID::HierarchicalReferences) const;
+      Variant Read(OpcUa::AttributeID attr);
+      StatusCode Write(OpcUa::AttributeID attr, const Variant &val);
+      //std::vector<StatusCode> WriteAttrs(OpcUa::AttributeID attr, const Variant &val);
 
-      Node GetChildNode(std::vector<QualifiedName> const &path);
+      Node GetChildNode (std::vector<QualifiedName> const &path);
 
       //Helper methods
-      Node GetChildNode(ushort ns, const std::string &browsename);
-      Node GetChildNode(const QualifiedName &browsename);
-      Node GetChildNode(const std::vector<std::string> &path); //assume namespace is same as parent
-      Node GetChildNode(const std::string &browsename) {return GetChildNode(this->browseName.NamespaceIndex, browsename);}
+      Node GetChildNode (ushort ns, const std::string &browsename);
+      Node GetChildNode (const QualifiedName &browsename);
+      Node GetChildNode (const std::vector<std::string> &path); //assume namespace is same as parent
+      Node GetChildNode (const std::string &browsename) {return GetChildNode(this->browseName.NamespaceIndex, browsename);}
 
-      void WriteValue(const Variant &variant);
+      StatusCode WriteValue(const Variant &variant);
       Variant ReadValue();
       Variant ReadDataType();
-      //std::vector<DataValue> ReadValueVector();
       void SetBrowseNameCache(const QualifiedName &browsename){this->browseName= browsename;}  
-      void WriteBrowseName(const QualifiedName &browsename); 
-      QualifiedName GetBrowseName() { return browseName; }
+      void WriteBrowseName (const QualifiedName &browsename); 
+      QualifiedName GetBrowseName() const { return browseName; }
       std::vector<Node> GetProperties() {return Browse(OpcUa::ReferenceID::HasProperty);}
       std::vector<Node> GetChildren() {return Browse();}
       std::vector<Node> GetVariables() {return Browse(OpcUa::ReferenceID::HasComponent);} //Not correct should filter by variable type

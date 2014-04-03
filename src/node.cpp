@@ -19,7 +19,7 @@
 
 
 
-#include <opc/common/node.h>
+#include <opc/ua/node.h>
 
 
 namespace OpcUa
@@ -35,7 +35,7 @@ namespace OpcUa
     return dv.Value;
   }
 
-  Variant Node::ReadValue()
+  Variant Node::ReadValue() 
   {
     return Read(OpcUa::AttributeID::VALUE);
   }
@@ -45,17 +45,22 @@ namespace OpcUa
     return Read(OpcUa::AttributeID::DATA_TYPE);
   }
 
-  std::vector<StatusCode> Node::Write(const OpcUa::AttributeID attr, Variant &value)
+  StatusCode Node::Write(const OpcUa::AttributeID attr, const Variant &value)
   {
     OpcUa::WriteValue attribute;
     attribute.Node = NodeId;
     attribute.Attribute = attr;
     attribute.Data = value;
-    return server->Attributes()->Write(std::vector<OpcUa::WriteValue>(1, attribute));
+    std::vector<StatusCode> codes = server->Attributes()->Write(std::vector<OpcUa::WriteValue>(1, attribute));
+    return codes.front();
   }
 
+  StatusCode Node::WriteValue(const Variant &value)
+  {
+    return Write(OpcUa::AttributeID::VALUE, value);
+  }
 
-  std::vector<Node> Node::Browse(const OpcUa::ReferenceID refid)
+  std::vector<Node> Node::Browse(const OpcUa::ReferenceID refid) const
   {
     OpcUa::BrowseDescription description;
     description.NodeToBrowse = this->NodeId;
