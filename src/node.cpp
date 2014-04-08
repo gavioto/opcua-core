@@ -60,7 +60,7 @@ namespace OpcUa
     return Write(OpcUa::AttributeID::VALUE, value);
   }
 
-  std::vector<Node> Node::Browse(const OpcUa::ReferenceID refid) const
+  std::vector<Node> Node::Browse(const OpcUa::ReferenceID refid)
   {
     OpcUa::BrowseDescription description;
     description.NodeToBrowse = this->NodeId;
@@ -109,16 +109,32 @@ namespace OpcUa
  Node Node::GetChildNode(const std::vector<std::string>& path)
   {
     std::vector<QualifiedName> vec;
+    ushort tmp_ns = this->browseName.NamespaceIndex;
     for (std::string str: path)
     {
-      QualifiedName qname;
-      qname.NamespaceIndex = this->browseName.NamespaceIndex;
-      qname.Name = str;
+      QualifiedName qname = ParseQualifiedNameFromString(str, tmp_ns);
+      tmp_ns = qname.NamespaceIndex;
       vec.push_back(qname);
     }
     return GetChildNode(vec);
   }
 
+ QualifiedName Node::ParseQualifiedNameFromString(const std::string& str, ushort default_ns)
+ {
+   std::cout << "parsing: " << str << std::endl;
+   std::size_t found = str.find(":");
+   if (found != std::string::npos)
+   {
+     ushort ns = std::stoi(str.substr(0, found));
+     std::string name = str.substr(found+1, str.length() - found);
+     std::cout << "result is: " << ns << ":" << name << std::endl;
+     return QualifiedName(ns, name);
+   }
+   else
+   {
+     return QualifiedName(default_ns, str);
+   }
+ }
 
   Node Node::GetChildNode(const std::vector<QualifiedName>& path)
   {
@@ -152,6 +168,8 @@ namespace OpcUa
 
   std::string Node::ToString() const
   {
+    if (this->mIsNull) { return "Node(*null)"; }
+
     std::ostringstream os;
     os << "Node(" << browseName.NamespaceIndex <<":"<< browseName.Name << ", id=" ;
     OpcUa::NodeIDEncoding encoding = static_cast<OpcUa::NodeIDEncoding>(NodeId.Encoding & OpcUa::NodeIDEncoding::EV_VALUE_MASK);

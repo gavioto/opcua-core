@@ -43,7 +43,9 @@ namespace OpcUa
       NodeID GetNodeId() const {return NodeId;}
 
       //The tree base Opc-Ua methods
-      std::vector<Node> Browse(OpcUa::ReferenceID refid=OpcUa::ReferenceID::HierarchicalReferences) const;
+      //std::vector<Node> PyBrowse() {return this->Browse(OpcUa::ReferenceID::HierarchicalReferences);}
+      std::vector<Node> Browse() {return this->Browse(OpcUa::ReferenceID::HierarchicalReferences);}
+      std::vector<Node> Browse(OpcUa::ReferenceID refid);
       Variant Read(OpcUa::AttributeID attr);
       StatusCode Write(OpcUa::AttributeID attr, const Variant &val);
       //std::vector<StatusCode> WriteAttrs(OpcUa::AttributeID attr, const Variant &val);
@@ -53,6 +55,7 @@ namespace OpcUa
       //Helper methods
       Node GetChildNode (ushort ns, const std::string &browsename);
       Node GetChildNode (const QualifiedName &browsename);
+      // a path element is either a string of format ns:browsename or simple browsename and namespace is dedices from preceding element or node namespace
       Node GetChildNode (const std::vector<std::string> &path); //assume namespace is same as parent
       Node GetChildNode (const std::string &browsename) {return GetChildNode(this->browseName.NamespaceIndex, browsename);}
 
@@ -70,12 +73,16 @@ namespace OpcUa
       std::string ToString() const; 
       explicit operator bool() const {return !mIsNull;}
 
+      bool operator==(Node const& x) const { return NodeId == x.NodeId; }
+      bool operator!=(Node const& x) const { return NodeId != x.NodeId; }
+
 
     private:
       OpcUa::Remote::Computer::SharedPtr server;
       bool mIsNull = true;
       NodeID NodeId;
       QualifiedName browseName ;
+      QualifiedName ParseQualifiedNameFromString(const std::string& str, ushort default_ns);
       friend std::ostream& operator<<(std::ostream& os, const Node& node){
         os << node.ToString();
         return os;
