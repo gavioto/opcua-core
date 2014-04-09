@@ -28,6 +28,10 @@
 
 namespace OpcUa
 {
+  //A Node object represent an OPC-UA node. It is high level object intended for developper who want to expose
+  // data through OPC-UA or read data from an OPCUA server.
+  //Node are usually not create directly but obtained through call 
+  // to GetRootNode og GetObjectsNode on server or client side
   class Node
   {
     public:
@@ -36,43 +40,62 @@ namespace OpcUa
         this->NodeId = nodeid;
         mIsNull = false;
       }
+      Node( const OpcUa::Remote::Computer::SharedPtr& server, const NodeID& nodeid, bool isNull ) {
+        this->server = server;
+        this->NodeId = nodeid;
+        mIsNull = isNull;
+      }
       Node( const OpcUa::Remote::Computer::SharedPtr& server){ this->server = server; mIsNull = true; };
       //~Node(){};
 
-      bool isNull() const { return mIsNull; }
+      bool IsNull() const { return mIsNull; }
       NodeID GetNodeId() const {return NodeId;}
+      OpcUa::Remote::Computer::SharedPtr GetServer() const {return server;}
 
-      //The tree base Opc-Ua methods
-      //std::vector<Node> PyBrowse() {return this->Browse(OpcUa::ReferenceID::HierarchicalReferences);}
+
+      //The Browse methods return "childs" of a node. Optionnnaly the reference type can be spcified
       std::vector<Node> Browse() {return this->Browse(OpcUa::ReferenceID::HierarchicalReferences);}
       std::vector<Node> Browse(OpcUa::ReferenceID refid);
-      Variant Read(OpcUa::AttributeID attr);
-      StatusCode Write(OpcUa::AttributeID attr, const Variant &val);
-      //std::vector<StatusCode> WriteAttrs(OpcUa::AttributeID attr, const Variant &val);
-
-      Node GetChildNode (std::vector<QualifiedName> const &path);
-
-      //Helper methods
-      Node GetChildNode (ushort ns, const std::string &browsename);
-      Node GetChildNode (const QualifiedName &browsename);
-      // a path element is either a string of format ns:browsename or simple browsename and namespace is dedices from preceding element or node namespace
-      Node GetChildNode (const std::vector<std::string> &path); //assume namespace is same as parent
-      Node GetChildNode (const std::string &browsename) {return GetChildNode(this->browseName.NamespaceIndex, browsename);}
-
-      StatusCode WriteValue(const Variant &variant);
-      Variant ReadValue();
-      Variant ReadDataType();
-      void SetBrowseNameCache(const QualifiedName &browsename){this->browseName= browsename;}  
-      void WriteBrowseName (const QualifiedName &browsename); 
-      QualifiedName GetBrowseName() const { return browseName; }
       std::vector<Node> GetProperties() {return Browse(OpcUa::ReferenceID::HasProperty);}
       std::vector<Node> GetChildren() {return Browse();}
       std::vector<Node> GetVariables() {return Browse(OpcUa::ReferenceID::HasComponent);} //Not correct should filter by variable type
 
+          
+      //The Read and Write methods read or write attributes of the node
+      Variant Read(OpcUa::AttributeID attr);
+      StatusCode Write(OpcUa::AttributeID attr, const Variant &val);
+      //std::vector<StatusCode> WriteAttrs(OpcUa::AttributeID attr, const Variant &val);
+      StatusCode WriteValue(const Variant &variant);
+      Variant ReadValue() { return Read(OpcUa::AttributeID::VALUE);}
+      Variant ReadDataType() {return Read(OpcUa::AttributeID::DATA_TYPE);}
+      QualifiedName ReadBrowseName() {
+        Variant var = Read(OpcUa::AttributeID::BROWSE_NAME); 
+        if (var.Type == OpcUa::VariantType::QUALIFIED_NAME)
+        {
+          return var.Value.Name.front();
+        }
+        return QualifiedName();
+      }
+      void SetBrowseNameCache(const QualifiedName &browsename){this->browseName= browsename;}  
+      void WriteBrowseName (const QualifiedName &browsename); 
+      QualifiedName GetBrowseNameCache() const { return browseName; }
+                
+      //The GetChildNode methods return a node defined by its path from the node. A path is defined by
+      // a sequence of browse name(QualifiedName). A browse name is either defined through a qualifiedname object
+      // or a string of format namespace:browsename. If a namespace is not specified it is assumed to be
+      //the same as the parent
+      Node GetChildNode (std::vector<QualifiedName> const &path);
+      Node GetChildNode (ushort ns, const std::string &browsename);
+      Node GetChildNode (const QualifiedName &browsename);
+      Node GetChildNode (const std::vector<std::string> &path); 
+      Node GetChildNode (const std::string &browsename) {return GetChildNode(this->browseName.NamespaceIndex, browsename);}
+
+
+
+
 
       std::string ToString() const; 
       explicit operator bool() const {return !mIsNull;}
-
       bool operator==(Node const& x) const { return NodeId == x.NodeId; }
       bool operator!=(Node const& x) const { return NodeId != x.NodeId; }
 

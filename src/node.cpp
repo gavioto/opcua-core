@@ -35,16 +35,6 @@ namespace OpcUa
     return dv.Value;
   }
 
-  Variant Node::ReadValue() 
-  {
-    return Read(OpcUa::AttributeID::VALUE);
-  }
-
-  Variant Node::ReadDataType()
-  {
-    return Read(OpcUa::AttributeID::DATA_TYPE);
-  }
-
   StatusCode Node::Write(const OpcUa::AttributeID attr, const Variant &value)
   {
     OpcUa::WriteValue attribute;
@@ -121,13 +111,11 @@ namespace OpcUa
 
  QualifiedName Node::ParseQualifiedNameFromString(const std::string& str, ushort default_ns)
  {
-   std::cout << "parsing: " << str << std::endl;
    std::size_t found = str.find(":");
    if (found != std::string::npos)
    {
      ushort ns = std::stoi(str.substr(0, found));
      std::string name = str.substr(found+1, str.length() - found);
-     std::cout << "result is: " << ns << ":" << name << std::endl;
      return QualifiedName(ns, name);
    }
    else
