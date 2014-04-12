@@ -16,6 +16,7 @@
 #include <opc/ua/endpoints.h>
 #include <opc/ua/subscriptions.h>
 #include <opc/ua/view.h>
+#include <opc/ua/addressspace.h>
 
 #include <memory>
 #include <vector>
@@ -48,6 +49,7 @@ namespace OpcUa
 
       virtual EndpointServices::SharedPtr Endpoints() const = 0;
       virtual ViewServices::SharedPtr Views() const = 0;
+      virtual AddressSpaceServices::SharedPtr AddressSpace() const = 0;
       virtual AttributeServices::SharedPtr Attributes() const = 0;
       virtual SubscriptionServices::SharedPtr Subscriptions() const = 0;
     };
