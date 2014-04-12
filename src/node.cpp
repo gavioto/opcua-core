@@ -213,4 +213,42 @@ namespace OpcUa
     return os.str();
   }
 
+  Node Node::AddFolderNode(uint16_t ns, uint32_t id, std::string name)
+  {
+    NodeID nodeid = OpcUa::NumericNodeID(id, ns);
+    server->AddressSpace()->AddAttribute(nodeid, AttributeID::NODE_ID,      NodeID(ObjectID::ObjectsFolder));
+    server->AddressSpace()->AddAttribute(nodeid, AttributeID::NODE_CLASS,   static_cast<int32_t>(NodeClass::Object));
+    server->AddressSpace()->AddAttribute(nodeid, AttributeID::BROWSE_NAME,  QualifiedName(0, name));
+    server->AddressSpace()->AddAttribute(nodeid, AttributeID::DISPLAY_NAME, LocalizedText(name));
+    server->AddressSpace()->AddAttribute(nodeid, AttributeID::DESCRIPTION,  LocalizedText(name));
+    server->AddressSpace()->AddAttribute(nodeid, AttributeID::WRITE_MASK,   0);
+    server->AddressSpace()->AddAttribute(nodeid, AttributeID::USER_WRITE_MASK, 0);
+    server->AddressSpace()->AddAttribute(nodeid, AttributeID::EVENT_NOTIFIER, (uint8_t)0);
+    
+    ReferenceDescription desc;
+    desc.ReferenceTypeID = ReferenceID::HasTypeDefinition;
+    desc.IsForward = true;
+    desc.TargetNodeID = NodeID(ObjectID::FolderType);
+    desc.BrowseName = QualifiedName(ns, name);
+    desc.DisplayName = LocalizedText(name);
+    desc.TargetNodeClass = NodeClass::ObjectType;
+    desc.TargetNodeTypeDefinition = ObjectID::Null;
+    server->AddressSpace()->AddReference(nodeid, desc);
+
+    //AddReference(ObjectID::RootFolder,  forward, ReferenceID::Organizes, ObjectID::ObjectsFolder, Names::Objects,    NodeClass::Object,     ObjectID::FolderType);
+    desc.ReferenceTypeID = ReferenceID::Organizes;
+    desc.IsForward = true;
+    desc.TargetNodeID = nodeid;
+    desc.BrowseName = QualifiedName(ns, name);
+    desc.DisplayName = LocalizedText(name);
+    desc.TargetNodeClass = NodeClass::Object;
+    desc.TargetNodeTypeDefinition = ObjectID::FolderType;
+    server->AddressSpace()->AddReference(this->NodeId, desc);
+
+    Node node(server, nodeid);
+    node.SetBrowseNameCache(desc.BrowseName);
+    return node;
+ 
+  }
+
 }

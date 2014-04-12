@@ -99,6 +99,8 @@ namespace OpcUa
       bool operator==(Node const& x) const { return NodeId == x.NodeId; }
       bool operator!=(Node const& x) const { return NodeId != x.NodeId; }
 
+      Node AddFolderNode(uint16_t ns, uint32_t id, std::string name); //This is possible, would be an nice API but require adding to move OpcUa::Server::AddressSpaceRegistry to common.  and later implement in client ...
+      Node AddVariable(uint16_t ns, uint32_t id, std::string name);
 
     private:
       OpcUa::Remote::Computer::SharedPtr server;
@@ -109,6 +111,8 @@ namespace OpcUa
       friend std::ostream& operator<<(std::ostream& os, const Node& node){
         os << node.ToString();
         return os;
+      //OpcUa::Server::AddressSpaceRegistry:: registry
+        
       }
 
   };
