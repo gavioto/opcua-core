@@ -20,6 +20,8 @@
 
 
 #include <opc/ua/node.h>
+#include <opc/ua/strings.h>
+#include <opc/ua/variable_access_level.h>
 
 
 namespace OpcUa
@@ -81,19 +83,6 @@ namespace OpcUa
       refs = server->Views()->BrowseNext();
     }
     return nodes;
-  }
-
-  Node Node::GetChildNode(ushort ns, const std::string& browsename)
-  {
-    QualifiedName qn(ns, browsename);
-    return GetChildNode(qn);
-  }
-
-  Node Node::GetChildNode(const QualifiedName& browsename)
-  {
-    std::vector<QualifiedName> path;
-    path.push_back(browsename);
-    return GetChildNode(path);
   }
 
  Node Node::GetChildNode(const std::vector<std::string>& path)
@@ -213,42 +202,164 @@ namespace OpcUa
     return os.str();
   }
 
-  Node Node::AddFolderNode(uint16_t ns, uint32_t id, std::string name)
+  Node Node::AddFolder(std::string name)
   {
-    NodeID nodeid = OpcUa::NumericNodeID(id, ns);
-    server->AddressSpace()->AddAttribute(nodeid, AttributeID::NODE_ID,      NodeID(ObjectID::ObjectsFolder));
+    NodeID nodeid = OpcUa::StringNodeID(name, this->NodeId.GetNamespaceIndex());
+    QualifiedName qn(this->browseName.NamespaceIndex, name);
+    return AddFolder(nodeid, qn);
+  }
+
+  Node Node::AddFolder(NodeID nodeid, QualifiedName browsename)
+  {
+    server->AddressSpace()->AddAttribute(nodeid, AttributeID::NODE_ID,      nodeid);
     server->AddressSpace()->AddAttribute(nodeid, AttributeID::NODE_CLASS,   static_cast<int32_t>(NodeClass::Object));
-    server->AddressSpace()->AddAttribute(nodeid, AttributeID::BROWSE_NAME,  QualifiedName(0, name));
-    server->AddressSpace()->AddAttribute(nodeid, AttributeID::DISPLAY_NAME, LocalizedText(name));
-    server->AddressSpace()->AddAttribute(nodeid, AttributeID::DESCRIPTION,  LocalizedText(name));
+    server->AddressSpace()->AddAttribute(nodeid, AttributeID::BROWSE_NAME,  browsename);
+    server->AddressSpace()->AddAttribute(nodeid, AttributeID::DISPLAY_NAME, LocalizedText(browsename.Name));
+    server->AddressSpace()->AddAttribute(nodeid, AttributeID::DESCRIPTION,  LocalizedText(browsename.Name));
     server->AddressSpace()->AddAttribute(nodeid, AttributeID::WRITE_MASK,   0);
     server->AddressSpace()->AddAttribute(nodeid, AttributeID::USER_WRITE_MASK, 0);
     server->AddressSpace()->AddAttribute(nodeid, AttributeID::EVENT_NOTIFIER, (uint8_t)0);
     
+   //Set expected type definition 
     ReferenceDescription desc;
     desc.ReferenceTypeID = ReferenceID::HasTypeDefinition;
     desc.IsForward = true;
     desc.TargetNodeID = NodeID(ObjectID::FolderType);
-    desc.BrowseName = QualifiedName(ns, name);
-    desc.DisplayName = LocalizedText(name);
+    desc.BrowseName = QualifiedName(Names::FolderType);
+    desc.DisplayName = LocalizedText(Names::FolderType);
     desc.TargetNodeClass = NodeClass::ObjectType;
     desc.TargetNodeTypeDefinition = ObjectID::Null;
+
     server->AddressSpace()->AddReference(nodeid, desc);
 
-    //AddReference(ObjectID::RootFolder,  forward, ReferenceID::Organizes, ObjectID::ObjectsFolder, Names::Objects,    NodeClass::Object,     ObjectID::FolderType);
+    //Link to parent(myself)
     desc.ReferenceTypeID = ReferenceID::Organizes;
-    desc.IsForward = true;
     desc.TargetNodeID = nodeid;
-    desc.BrowseName = QualifiedName(ns, name);
-    desc.DisplayName = LocalizedText(name);
     desc.TargetNodeClass = NodeClass::Object;
     desc.TargetNodeTypeDefinition = ObjectID::FolderType;
+    desc.BrowseName = browsename;
+    desc.DisplayName = LocalizedText(browsename.Name);
+
     server->AddressSpace()->AddReference(this->NodeId, desc);
 
     Node node(server, nodeid);
     node.SetBrowseNameCache(desc.BrowseName);
     return node;
- 
   }
+
+  Node Node::AddVariable(std::string name, Variant val)
+  {
+    NodeID nodeid = OpcUa::StringNodeID(name, this->NodeId.GetNamespaceIndex());
+    QualifiedName qn(this->browseName.NamespaceIndex, name);
+    return AddVariable(nodeid, qn, val);
+  }
+
+  Node Node::AddVariable(NodeID nodeid, QualifiedName browsename, Variant val)
+  {
+
+    ObjectID datatype = VariantTypeToDataType(val.Type);
+    //Base attributes
+    server->AddressSpace()->AddAttribute(nodeid, AttributeID::NODE_ID,      nodeid);
+    server->AddressSpace()->AddAttribute(nodeid, AttributeID::NODE_CLASS,   static_cast<int32_t>(NodeClass::Variable));
+    server->AddressSpace()->AddAttribute(nodeid, AttributeID::BROWSE_NAME,  browsename);
+    server->AddressSpace()->AddAttribute(nodeid, AttributeID::DISPLAY_NAME, LocalizedText(browsename.Name));
+    server->AddressSpace()->AddAttribute(nodeid, AttributeID::DESCRIPTION,  LocalizedText(browsename.Name));
+    server->AddressSpace()->AddAttribute(nodeid, AttributeID::WRITE_MASK,   0);
+    server->AddressSpace()->AddAttribute(nodeid, AttributeID::USER_WRITE_MASK, 0);
+    server->AddressSpace()->AddAttribute(nodeid, AttributeID::EVENT_NOTIFIER, (uint8_t)0);
+    //Variable Attributes
+    server->AddressSpace()->AddAttribute(nodeid, AttributeID::VALUE, val);
+    server->AddressSpace()->AddAttribute(nodeid, AttributeID::DATA_TYPE, datatype);
+    server->AddressSpace()->AddAttribute(nodeid, AttributeID::ARRAY_DIMENSIONS, val.Dimensions.size()); //FIXME: to check!!
+    //server->AddressSpace()->AddAttribute(nodeid, AttributeID::ACCESS_LEVEL, static_cast<uint8_t>(VariableAccessLevel::CurrentRead|VariableAccessLevel::CurrentWrite));
+    //server->AddressSpace()->AddAttribute(nodeid, AttributeID::USER_ACCESS_LEVEL, static_cast<uint8_t>(VariableAccessLevel::CurrentRead));
+    server->AddressSpace()->AddAttribute(nodeid, AttributeID::MINIMUM_SAMPLING_INTERVAL, Duration(0));
+    server->AddressSpace()->AddAttribute(nodeid, AttributeID::HISTORIZING, false);
+    server->AddressSpace()->AddAttribute(nodeid, AttributeID::VALUE_RANK, int32_t(-1));
+   
+    //set up expected type definition  
+    ReferenceDescription desc;
+    desc.ReferenceTypeID = ReferenceID::HasTypeDefinition;
+    desc.IsForward = true;
+    desc.TargetNodeID = NodeID(ObjectID::BaseDataVariableType);
+    desc.BrowseName = QualifiedName(Names::BaseDataVariableType);
+    desc.DisplayName = LocalizedText(Names::BaseDataVariableType);
+    desc.TargetNodeClass = NodeClass::DataType;
+    desc.TargetNodeTypeDefinition = ObjectID::Null;
+
+    server->AddressSpace()->AddReference(nodeid, desc);
+    
+    //link it as child of correct type
+    desc.ReferenceTypeID = ReferenceID::HasComponent;
+    desc.TargetNodeID = nodeid;
+    desc.TargetNodeClass = NodeClass::Variable;
+    desc.BrowseName = browsename;
+    desc.DisplayName = LocalizedText(browsename.Name);
+    desc.TargetNodeTypeDefinition = ObjectID::BaseDataVariableType;
+
+    server->AddressSpace()->AddReference(this->NodeId, desc);
+
+    Node node(server, nodeid);
+    node.SetBrowseNameCache(desc.BrowseName);
+    return node;
+  }
+
+
+  Node Node::AddProperty(std::string name, Variant val)
+  {
+    NodeID nodeid = OpcUa::StringNodeID(name, this->NodeId.GetNamespaceIndex());
+    QualifiedName qn(this->browseName.NamespaceIndex, name);
+    return AddProperty(nodeid, qn, val);
+  }
+
+  Node Node::AddProperty(NodeID nodeid, QualifiedName browsename, Variant val)
+  {
+
+    ObjectID datatype = VariantTypeToDataType(val.Type);
+
+    server->AddressSpace()->AddAttribute(nodeid, AttributeID::NODE_ID,      nodeid);
+    server->AddressSpace()->AddAttribute(nodeid, AttributeID::NODE_CLASS,   static_cast<int32_t>(NodeClass::Variable));
+    server->AddressSpace()->AddAttribute(nodeid, AttributeID::BROWSE_NAME,  browsename);
+    server->AddressSpace()->AddAttribute(nodeid, AttributeID::DISPLAY_NAME, LocalizedText(browsename.Name));
+    server->AddressSpace()->AddAttribute(nodeid, AttributeID::DESCRIPTION,  LocalizedText(browsename.Name));
+    server->AddressSpace()->AddAttribute(nodeid, AttributeID::WRITE_MASK,   0);
+    server->AddressSpace()->AddAttribute(nodeid, AttributeID::USER_WRITE_MASK, 0);
+    server->AddressSpace()->AddAttribute(nodeid, AttributeID::EVENT_NOTIFIER, (uint8_t)0);
+    server->AddressSpace()->AddAttribute(nodeid, AttributeID::HISTORIZING, false);
+    server->AddressSpace()->AddAttribute(nodeid, AttributeID::VALUE_RANK, int32_t(-1));
+    server->AddressSpace()->AddAttribute(nodeid, AttributeID::MINIMUM_SAMPLING_INTERVAL, Duration(0));
+    server->AddressSpace()->AddAttribute(nodeid, AttributeID::DATA_TYPE, datatype);
+    server->AddressSpace()->AddAttribute(nodeid, AttributeID::VALUE, val);
+    server->AddressSpace()->AddAttribute(nodeid, AttributeID::ARRAY_DIMENSIONS, val.Dimensions.size()); //FIXME: to check!!
+   
+    //set up expected type definition  
+    ReferenceDescription desc;
+    desc.ReferenceTypeID = ReferenceID::HasTypeDefinition;
+    desc.IsForward = true;
+    desc.TargetNodeID = NodeID(ObjectID::PropertyType);
+    desc.TargetNodeClass = NodeClass::DataType;
+    desc.BrowseName = QualifiedName(Names::PropertyType);
+    desc.DisplayName = LocalizedText(Names::PropertyType);
+    desc.TargetNodeTypeDefinition = ObjectID::Null;
+
+    server->AddressSpace()->AddReference(nodeid, desc);
+    
+    //link it as child of correct type
+    desc.ReferenceTypeID = ReferenceID::HasProperty; //This should be the correct type
+    //desc.ReferenceTypeID = ReferenceID::HasComponent;
+    desc.TargetNodeID = nodeid;
+    desc.TargetNodeClass = NodeClass::Variable;
+    desc.BrowseName = browsename;
+    desc.DisplayName = LocalizedText(browsename.Name);
+    desc.TargetNodeTypeDefinition = ObjectID::PropertyType;
+
+    server->AddressSpace()->AddReference(this->NodeId, desc);
+
+    Node node(server, nodeid);
+    node.SetBrowseNameCache(desc.BrowseName);
+    return node;
+  }
+
+
 
 }

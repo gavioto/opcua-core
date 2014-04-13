@@ -85,10 +85,8 @@ namespace OpcUa
       // or a string of format namespace:browsename. If a namespace is not specified it is assumed to be
       //the same as the parent
       Node GetChildNode (std::vector<QualifiedName> const &path);
-      Node GetChildNode (ushort ns, const std::string &browsename);
-      Node GetChildNode (const QualifiedName &browsename);
       Node GetChildNode (const std::vector<std::string> &path); 
-      Node GetChildNode (const std::string &browsename) {return GetChildNode(this->browseName.NamespaceIndex, browsename);}
+      Node GetChildNode (const std::string &browsename) {return GetChildNode(std::vector<std::string>({browsename}));}
 
 
 
@@ -99,8 +97,12 @@ namespace OpcUa
       bool operator==(Node const& x) const { return NodeId == x.NodeId; }
       bool operator!=(Node const& x) const { return NodeId != x.NodeId; }
 
-      Node AddFolderNode(uint16_t ns, uint32_t id, std::string name); //This is possible, would be an nice API but require adding to move OpcUa::Server::AddressSpaceRegistry to common.  and later implement in client ...
-      Node AddVariable(uint16_t ns, uint32_t id, std::string name);
+      Node AddFolder(NodeID nodeid, QualifiedName browsename);
+      Node AddFolder(std::string name); 
+      Node AddVariable(NodeID nodeid, QualifiedName browsename, Variant val);
+      Node AddVariable(std::string name, Variant val); //FIXME: data type as a string is stupide, find something better
+      Node AddProperty(NodeID nodeid, QualifiedName browsename, Variant val);
+      Node AddProperty(std::string name, Variant val); 
 
     private:
       OpcUa::Remote::Computer::SharedPtr server;
@@ -112,10 +114,50 @@ namespace OpcUa
         os << node.ToString();
         return os;
       //OpcUa::Server::AddressSpaceRegistry:: registry
-        
+      //void createNode(NodeID nodeid, QualifiedName browsename);
+
       }
 
   };
+
+  //FIXME: This should be somewhere else, maybe wariant.h. And maybe there is another way or this is wrong
+  ObjectID VariantTypeToDataType(VariantType vt)
+  {
+    switch (vt)
+    {
+      case VariantType::BOOLEAN:          return ObjectID::Boolean;   
+      case VariantType::SBYTE:            return ObjectID::SByte;  
+      case VariantType::BYTE:             return ObjectID::Byte;
+      case VariantType::INT16:            return ObjectID::Int16;
+      case VariantType::UINT16:           return ObjectID::UInt16;
+      case VariantType::INT32:            return ObjectID::Int32;
+      case VariantType::UINT32:           return ObjectID::UInt32;
+      case VariantType::INT64:            return ObjectID::Int64;
+      case VariantType::UINT64:           return ObjectID::UInt64;
+      case VariantType::FLOAT:            return ObjectID::Float;
+      case VariantType::DOUBLE:           return ObjectID::Double;
+      case VariantType::STRING:           return ObjectID::String;
+      case VariantType::DATE_TIME:        return ObjectID::DateTime;
+      case VariantType::GUID:             return ObjectID::Guid;
+      case VariantType::BYTE_STRING:      return ObjectID::ByteString;
+      case VariantType::XML_ELEMENT:      return ObjectID::XmlElement;
+      case VariantType::NODE_ID:          return ObjectID::NodeID;
+      case VariantType::EXPANDED_NODE_ID: return ObjectID::ExpandedNodeID;
+      case VariantType::STATUS_CODE:      return ObjectID::StatusCode;
+      case VariantType::QUALIFIED_NAME:   return ObjectID::QualifiedName;
+      case VariantType::LOCALIZED_TEXT:   return ObjectID::LocalizedText;
+      case VariantType::DIAGNOSTIC_INFO:  return ObjectID::DiagnosticInfo;
+      case VariantType::DATA_VALUE:       return ObjectID::DataValue;
+      case VariantType::NUL:              return ObjectID::Null;
+      case VariantType::EXTENSION_OBJECT:
+      case VariantType::VARIANT:          
+      default:
+        throw std::logic_error("Unknown variant type.");
+    }
+  }
+
+
+
 } // namespace OpcUa
 
 #endif
