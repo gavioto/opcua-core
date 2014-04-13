@@ -96,13 +96,17 @@ namespace OpcUa
       explicit operator bool() const {return !mIsNull;}
       bool operator==(Node const& x) const { return NodeId == x.NodeId; }
       bool operator!=(Node const& x) const { return NodeId != x.NodeId; }
-
-      Node AddFolder(NodeID nodeid, QualifiedName browsename);
-      Node AddFolder(std::string name); 
-      Node AddVariable(NodeID nodeid, QualifiedName browsename, Variant val);
-      Node AddVariable(std::string name, Variant val); //FIXME: data type as a string is stupide, find something better
-      Node AddProperty(NodeID nodeid, QualifiedName browsename, Variant val);
-      Node AddProperty(std::string name, Variant val); 
+      
+      //OpcUa low level methods to to modify address space model
+      void AddAttribute(OpcUa::AttributeID attr, const OpcUa::Variant val){return server->AddressSpace()->AddAttribute(this->NodeId, attr, val);}
+      void AddReference(const OpcUa::ReferenceDescription desc) {return server->AddressSpace()->AddReference(this->NodeId, desc);}
+      //Helper classes to modify address space model
+      Node AddFolder(const NodeID& nodeid, const QualifiedName& browsename);
+      Node AddFolder(const std::string& name); 
+      Node AddVariable(const NodeID& nodeid, const QualifiedName& browsename, const Variant& val);
+      Node AddVariable(const std::string& name, const Variant& val); 
+      Node AddProperty(const NodeID& nodeid, const QualifiedName& browsename, const Variant& val);
+      Node AddProperty(const std::string& name, const Variant& val); 
 
     private:
       OpcUa::Remote::Computer::SharedPtr server;

@@ -202,14 +202,14 @@ namespace OpcUa
     return os.str();
   }
 
-  Node Node::AddFolder(std::string name)
+  Node Node::AddFolder(const std::string& name)
   {
     NodeID nodeid = OpcUa::StringNodeID(name, this->NodeId.GetNamespaceIndex());
     QualifiedName qn(this->browseName.NamespaceIndex, name);
     return AddFolder(nodeid, qn);
   }
 
-  Node Node::AddFolder(NodeID nodeid, QualifiedName browsename)
+  Node Node::AddFolder(const NodeID& nodeid, const QualifiedName& browsename)
   {
     server->AddressSpace()->AddAttribute(nodeid, AttributeID::NODE_ID,      nodeid);
     server->AddressSpace()->AddAttribute(nodeid, AttributeID::NODE_CLASS,   static_cast<int32_t>(NodeClass::Object));
@@ -247,14 +247,14 @@ namespace OpcUa
     return node;
   }
 
-  Node Node::AddVariable(std::string name, Variant val)
+  Node Node::AddVariable(const std::string& name, const Variant& val)
   {
     NodeID nodeid = OpcUa::StringNodeID(name, this->NodeId.GetNamespaceIndex());
     QualifiedName qn(this->browseName.NamespaceIndex, name);
     return AddVariable(nodeid, qn, val);
   }
 
-  Node Node::AddVariable(NodeID nodeid, QualifiedName browsename, Variant val)
+  Node Node::AddVariable(const NodeID& nodeid, const QualifiedName& browsename, const Variant& val)
   {
 
     ObjectID datatype = VariantTypeToDataType(val.Type);
@@ -305,14 +305,14 @@ namespace OpcUa
   }
 
 
-  Node Node::AddProperty(std::string name, Variant val)
+  Node Node::AddProperty(const std::string& name, const Variant& val)
   {
     NodeID nodeid = OpcUa::StringNodeID(name, this->NodeId.GetNamespaceIndex());
     QualifiedName qn(this->browseName.NamespaceIndex, name);
     return AddProperty(nodeid, qn, val);
   }
 
-  Node Node::AddProperty(NodeID nodeid, QualifiedName browsename, Variant val)
+  Node Node::AddProperty(const NodeID& nodeid, const QualifiedName& browsename, const Variant& val)
   {
 
     ObjectID datatype = VariantTypeToDataType(val.Type);
