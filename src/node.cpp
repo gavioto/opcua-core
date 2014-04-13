@@ -173,20 +173,20 @@ namespace OpcUa
 
       case OpcUa::NodeIDEncoding::EV_STRING:
       {
-        os << (unsigned)NodeId.StringData.NamespaceIndex << ":" << NodeId.StringData.Identifier << std::endl;
+        os << (unsigned)NodeId.StringData.NamespaceIndex << ":" << NodeId.StringData.Identifier;
         break;
       }
 
       case OpcUa::NodeIDEncoding::EV_BYTE_STRING:
       {
-        os << (unsigned)NodeId.BinaryData.NamespaceIndex ; //<< for (auto val : NodeId.BinaryData.Identifier) {std::cout << (unsigned)val; }
-        //std::cout << std::endl;
+        os << (unsigned)NodeId.BinaryData.NamespaceIndex << ":";
+        for (auto val : NodeId.BinaryData.Identifier) {os << (unsigned)val; }
         break;
       }
 
       case OpcUa::NodeIDEncoding::EV_GUID:
       {
-        os << "Guid: " << (unsigned)NodeId.GuidData.NamespaceIndex ;
+        os << (unsigned)NodeId.GuidData.NamespaceIndex ;
         const OpcUa::Guid& guid = NodeId.GuidData.Identifier;
         os << ":" << std::hex << guid.Data1 << "-" << guid.Data2 << "-" << guid.Data3;
         for (auto val : guid.Data4) {os << (unsigned)val; }
