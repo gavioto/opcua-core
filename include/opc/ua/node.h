@@ -22,7 +22,7 @@
 
 #include <sstream>
 
-#include <opc/ua/computer.h>
+#include <opc/ua/server.h>
 
 
 

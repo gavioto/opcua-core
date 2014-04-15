@@ -18,7 +18,7 @@
 
 namespace OpcUa
 {
-  namespace Server
+  namespace UaServer
   {
 
     class IncomingConnectionProcessor : private Common::Interface
@@ -35,7 +35,7 @@ namespace OpcUa
       virtual void Stop() = 0;
     };
 
-  } // namespace Server
+  } // namespace UaServer
 }  // namespace OpcUA
 
 #endif // _OPC_UA_BINARY_SERVER_H
