@@ -47,7 +47,7 @@ namespace Common
   {
     if (Library)
     {
-      //dlclose(Library);
+      dlclose(Library);
     }
   }
 

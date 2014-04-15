@@ -35,40 +35,41 @@ namespace OpcUa
   class Node
   {
     public:
-      Node( const OpcUa::Remote::Computer::SharedPtr& server, const NodeID& nodeid ) {
+      Node( OpcUa::Remote::Computer* server, const NodeID& nodeid ) {
         this->server = server;
         this->NodeId = nodeid;
         mIsNull = false;
       }
-      Node( const OpcUa::Remote::Computer::SharedPtr& server, const NodeID& nodeid, bool isNull ) {
+      Node( OpcUa::Remote::Computer* server, const NodeID& nodeid, bool isNull ) {
         this->server = server;
         this->NodeId = nodeid;
         mIsNull = isNull;
       }
-      Node( const OpcUa::Remote::Computer::SharedPtr& server){ this->server = server; mIsNull = true; };
+      Node( OpcUa::Remote::Computer* server){ this->server = server; mIsNull = true; };
       //~Node(){};
 
       bool IsNull() const { return mIsNull; }
       NodeID GetNodeId() const {return NodeId;}
-      OpcUa::Remote::Computer::SharedPtr GetServer() const {return server;}
+      OpcUa::Remote::Computer* GetServer() const {return server;}
 
 
       //The Browse methods return "childs" of a node. Optionnnaly the reference type can be spcified
-      std::vector<Node> Browse() {return this->Browse(OpcUa::ReferenceID::HierarchicalReferences);}
       std::vector<Node> Browse(OpcUa::ReferenceID refid);
+      std::vector<Node> Browse() {return this->Browse(OpcUa::ReferenceID::HierarchicalReferences);}
       std::vector<Node> GetProperties() {return Browse(OpcUa::ReferenceID::HasProperty);}
-      std::vector<Node> GetChildren() {return Browse();}
       std::vector<Node> GetVariables() {return Browse(OpcUa::ReferenceID::HasComponent);} //Not correct should filter by variable type
 
           
       //The Read and Write methods read or write attributes of the node
+      //FIXME: add possibility to read and write several nodes at once
       Variant Read(OpcUa::AttributeID attr);
       StatusCode Write(OpcUa::AttributeID attr, const Variant &val);
       //std::vector<StatusCode> WriteAttrs(OpcUa::AttributeID attr, const Variant &val);
       StatusCode WriteValue(const Variant &variant);
       Variant ReadValue() { return Read(OpcUa::AttributeID::VALUE);}
       Variant ReadDataType() {return Read(OpcUa::AttributeID::DATA_TYPE);}
-      QualifiedName ReadBrowseName() {
+      QualifiedName ReadBrowseName() 
+      {
         Variant var = Read(OpcUa::AttributeID::BROWSE_NAME); 
         if (var.Type == OpcUa::VariantType::QUALIFIED_NAME)
         {
@@ -88,10 +89,6 @@ namespace OpcUa
       Node GetChildNode (const std::vector<std::string> &path); 
       Node GetChildNode (const std::string &browsename) {return GetChildNode(std::vector<std::string>({browsename}));}
 
-
-
-
-
       std::string ToString() const; 
       explicit operator bool() const {return !mIsNull;}
       bool operator==(Node const& x) const { return NodeId == x.NodeId; }
@@ -109,7 +106,10 @@ namespace OpcUa
       Node AddProperty(const std::string& name, const Variant& val); 
 
     private:
-      OpcUa::Remote::Computer::SharedPtr server;
+      //We cnnot use shared pointer because we donnot own them 
+      //they can be invalidated when  share libs are unloaded
+      //OpcUa::Remote::Computer::SharedPtr server;
+      OpcUa::Remote::Computer* server;
       bool mIsNull = true;
       NodeID NodeId;
       QualifiedName browseName ;
