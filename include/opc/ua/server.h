@@ -8,8 +8,8 @@
 /// http://www.gnu.org/licenses/lgpl.html)
 ///
 
-#ifndef OPC_UA_COMPUTER_H
-#define OPC_UA_COMPUTER_H
+#ifndef OPC_UA_SERVER_H
+#define OPC_UA_SERVER_H
 
 #include <opc/common/class_pointers.h>
 #include <opc/ua/attributes.h>
@@ -36,11 +36,10 @@ namespace OpcUa
       Duration Timeout;
     };
 
-    // TODO rename Computer to server
-    class Computer : private Common::Interface
+    class Server : private Common::Interface
     {
     public:
-      DEFINE_CLASS_POINTERS(Computer);
+      DEFINE_CLASS_POINTERS(Server);
 
     public:
       virtual void CreateSession(const SessionParameters& parameters) = 0;
@@ -57,4 +56,4 @@ namespace OpcUa
   }
 }
 
-#endif //  OPC_UA_CLIENT_COMPUTER_H
+#endif //  OPC_UA_SERVER_H

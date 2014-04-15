@@ -35,22 +35,22 @@ namespace OpcUa
   class Node
   {
     public:
-      Node( OpcUa::Remote::Computer* server, const NodeID& nodeid ) {
+      Node( OpcUa::Remote::Server* server, const NodeID& nodeid ) {
         this->server = server;
         this->NodeId = nodeid;
         mIsNull = false;
       }
-      Node( OpcUa::Remote::Computer* server, const NodeID& nodeid, bool isNull ) {
+      Node( OpcUa::Remote::Server* server, const NodeID& nodeid, bool isNull ) {
         this->server = server;
         this->NodeId = nodeid;
         mIsNull = isNull;
       }
-      Node( OpcUa::Remote::Computer* server){ this->server = server; mIsNull = true; };
+      Node( OpcUa::Remote::Server* server){ this->server = server; mIsNull = true; };
       //~Node(){};
 
       bool IsNull() const { return mIsNull; }
       NodeID GetNodeId() const {return NodeId;}
-      OpcUa::Remote::Computer* GetServer() const {return server;}
+      OpcUa::Remote::Server* GetServer() const {return server;}
 
 
       //The Browse methods return "childs" of a node. Optionnnaly the reference type can be spcified
@@ -108,8 +108,8 @@ namespace OpcUa
     private:
       //We cnnot use shared pointer because we donnot own them 
       //they can be invalidated when  share libs are unloaded
-      //OpcUa::Remote::Computer::SharedPtr server;
-      OpcUa::Remote::Computer* server;
+      //OpcUa::Remote::Server::SharedPtr server;
+      OpcUa::Remote::Server* server;
       bool mIsNull = true;
       NodeID NodeId;
       QualifiedName browseName ;
