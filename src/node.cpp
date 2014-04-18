@@ -91,14 +91,14 @@ namespace OpcUa
     ushort tmp_ns = this->browseName.NamespaceIndex;
     for (std::string str: path)
     {
-      QualifiedName qname = ParseQualifiedNameFromString(str, tmp_ns);
+      QualifiedName qname = ParseQualifiedNameFromString(tmp_ns, str);
       tmp_ns = qname.NamespaceIndex;
       vec.push_back(qname);
     }
     return GetChildNode(vec);
   }
 
- QualifiedName Node::ParseQualifiedNameFromString(const std::string& str, ushort default_ns)
+ QualifiedName Node::ParseQualifiedNameFromString(uint16_t default_ns, const std::string& str)
  {
    std::size_t found = str.find(":");
    if (found != std::string::npos)
@@ -112,6 +112,22 @@ namespace OpcUa
      return QualifiedName(default_ns, str);
    }
  }
+
+ NodeID Node::ParseNodeIdFromString(uint16_t default_ns, const std::string& str)
+ {
+   std::size_t found = str.find(":");
+   if (found != std::string::npos)
+   {
+     uint16_t ns = std::stoi(str.substr(0, found));
+     std::string name = str.substr(found+1, str.length() - found);
+     return StringNodeID(name, ns);
+   }
+   else
+   {
+     return StringNodeID(str, default_ns);
+   }
+ }
+
 
   Node Node::GetChildNode(const std::vector<QualifiedName>& path)
   {
@@ -204,8 +220,8 @@ namespace OpcUa
 
   Node Node::AddFolder(const std::string& name)
   {
-    NodeID nodeid = OpcUa::StringNodeID(name, this->NodeId.GetNamespaceIndex());
-    QualifiedName qn(this->browseName.NamespaceIndex, name);
+    NodeID nodeid = ParseNodeIdFromString(this->NodeId.GetNamespaceIndex(), name);
+    QualifiedName qn = ParseQualifiedNameFromString(this->browseName.NamespaceIndex, name);
     return AddFolder(nodeid, qn);
   }
 
@@ -249,8 +265,8 @@ namespace OpcUa
 
   Node Node::AddVariable(const std::string& name, const Variant& val)
   {
-    NodeID nodeid = OpcUa::StringNodeID(name, this->NodeId.GetNamespaceIndex());
-    QualifiedName qn(this->browseName.NamespaceIndex, name);
+    NodeID nodeid = ParseNodeIdFromString(this->NodeId.GetNamespaceIndex(), name);
+    QualifiedName qn = ParseQualifiedNameFromString(this->browseName.NamespaceIndex, name);
     return AddVariable(nodeid, qn, val);
   }
 
@@ -307,8 +323,8 @@ namespace OpcUa
 
   Node Node::AddProperty(const std::string& name, const Variant& val)
   {
-    NodeID nodeid = OpcUa::StringNodeID(name, this->NodeId.GetNamespaceIndex());
-    QualifiedName qn(this->browseName.NamespaceIndex, name);
+    NodeID nodeid = ParseNodeIdFromString(this->NodeId.GetNamespaceIndex(), name);
+    QualifiedName qn = ParseQualifiedNameFromString(this->browseName.NamespaceIndex, name);
     return AddProperty(nodeid, qn, val);
   }
 

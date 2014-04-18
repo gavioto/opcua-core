@@ -113,7 +113,8 @@ namespace OpcUa
       bool mIsNull = true;
       NodeID NodeId;
       QualifiedName browseName ;
-      QualifiedName ParseQualifiedNameFromString(const std::string& str, ushort default_ns);
+      QualifiedName ParseQualifiedNameFromString(uint16_t default_ns, const std::string& str);
+      NodeID ParseNodeIdFromString(uint16_t default_ns, const std::string& str);
       friend std::ostream& operator<<(std::ostream& os, const Node& node){
         os << node.ToString();
         return os;
