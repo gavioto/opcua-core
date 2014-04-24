@@ -22,6 +22,7 @@
 #include <opc/ua/node.h>
 #include <opc/ua/strings.h>
 #include <opc/ua/variable_access_level.h>
+#include <opc/common/object_id.h>
 
 
 namespace OpcUa
@@ -76,7 +77,6 @@ namespace OpcUa
       for (auto refIt : refs)
       {
         Node node(server, refIt.TargetNodeID);
-        //std::cout << "Creating node with borwsename: " << refIt.BrowseName.NamespaceIndex << refIt.BrowseName.Name << std::endl;
         node.SetBrowseNameCache(refIt.BrowseName);
         nodes.push_back(node);
       }
@@ -91,14 +91,14 @@ namespace OpcUa
     ushort tmp_ns = this->browseName.NamespaceIndex;
     for (std::string str: path)
     {
-      QualifiedName qname = ParseQualifiedNameFromString(tmp_ns, str);
+      QualifiedName qname = ParseQualifiedNameFromString(str, tmp_ns);
       tmp_ns = qname.NamespaceIndex;
       vec.push_back(qname);
     }
     return GetChildNode(vec);
   }
 
- QualifiedName Node::ParseQualifiedNameFromString(uint16_t default_ns, const std::string& str)
+ QualifiedName Node::ParseQualifiedNameFromString(const std::string& str, uint16_t default_ns)
  {
    std::size_t found = str.find(":");
    if (found != std::string::npos)
@@ -113,7 +113,7 @@ namespace OpcUa
    }
  }
 
- NodeID Node::ParseNodeIdFromString(uint16_t default_ns, const std::string& str)
+ NodeID Node::ParseNodeIdFromString(const std::string& str, uint16_t default_ns)
  {
    std::size_t found = str.find(":");
    if (found != std::string::npos)
@@ -164,64 +164,21 @@ namespace OpcUa
     if (this->mIsNull) { return "Node(*null)"; }
 
     std::ostringstream os;
-    os << "Node(" << browseName.NamespaceIndex <<":"<< browseName.Name << ", id=" ;
-    OpcUa::NodeIDEncoding encoding = static_cast<OpcUa::NodeIDEncoding>(NodeId.Encoding & OpcUa::NodeIDEncoding::EV_VALUE_MASK);
-
-    switch (encoding)
-    {
-      case OpcUa::NodeIDEncoding::EV_TWO_BYTE:
-      {
-        os << (unsigned)NodeId.TwoByteData.Identifier ;
-        break;
-      }
-
-      case OpcUa::NodeIDEncoding::EV_FOUR_BYTE:
-      {
-        os << (unsigned)NodeId.FourByteData.NamespaceIndex << ":" << (unsigned)NodeId.FourByteData.Identifier ;
-        break;
-      }
-
-      case OpcUa::NodeIDEncoding::EV_NUMERIC:
-      {
-        os << (unsigned)NodeId.NumericData.NamespaceIndex << ":" << (unsigned)NodeId.NumericData.Identifier ;
-        break;
-      }
-
-      case OpcUa::NodeIDEncoding::EV_STRING:
-      {
-        os << (unsigned)NodeId.StringData.NamespaceIndex << ":" << NodeId.StringData.Identifier;
-        break;
-      }
-
-      case OpcUa::NodeIDEncoding::EV_BYTE_STRING:
-      {
-        os << (unsigned)NodeId.BinaryData.NamespaceIndex << ":";
-        for (auto val : NodeId.BinaryData.Identifier) {os << (unsigned)val; }
-        break;
-      }
-
-      case OpcUa::NodeIDEncoding::EV_GUID:
-      {
-        os << (unsigned)NodeId.GuidData.NamespaceIndex ;
-        const OpcUa::Guid& guid = NodeId.GuidData.Identifier;
-        os << ":" << std::hex << guid.Data1 << "-" << guid.Data2 << "-" << guid.Data3;
-        for (auto val : guid.Data4) {os << (unsigned)val; }
-        break;
-      }
-      default:
-      {
-        os << "unknown id type:" << (unsigned)encoding ;
-        break;
-      }
-    }
-    os << ")";
+    os << "Node(" << browseName.NamespaceIndex <<":"<< browseName.Name << ", id=" << NodeId << ")";
     return os.str();
   }
 
-  Node Node::AddFolder(const std::string& name)
+  Node Node::AddFolder(const std::string& nodeid, const std::string& browsename)
   {
-    NodeID nodeid = ParseNodeIdFromString(this->NodeId.GetNamespaceIndex(), name);
-    QualifiedName qn = ParseQualifiedNameFromString(this->browseName.NamespaceIndex, name);
+    NodeID node = ParseNodeIdFromString(nodeid, this->NodeId.GetNamespaceIndex());
+    QualifiedName qn = ParseQualifiedNameFromString(browsename, this->browseName.NamespaceIndex);
+    return AddFolder(node, qn);
+  }
+
+  Node Node::AddFolder(const std::string& browsename)
+  {
+    NodeID nodeid = OpcUa::NumericNodeID(Common::GenerateNewID(), this->NodeId.GetNamespaceIndex());
+    QualifiedName qn = ParseQualifiedNameFromString(browsename, this->browseName.NamespaceIndex);
     return AddFolder(nodeid, qn);
   }
 
@@ -263,11 +220,18 @@ namespace OpcUa
     return node;
   }
 
-  Node Node::AddVariable(const std::string& name, const Variant& val)
+  Node Node::AddVariable(const std::string& browsename, const Variant& val) 
   {
-    NodeID nodeid = ParseNodeIdFromString(this->NodeId.GetNamespaceIndex(), name);
-    QualifiedName qn = ParseQualifiedNameFromString(this->browseName.NamespaceIndex, name);
+    NodeID nodeid = OpcUa::NumericNodeID(Common::GenerateNewID(), this->NodeId.GetNamespaceIndex());
+    QualifiedName qn = ParseQualifiedNameFromString(browsename, this->browseName.NamespaceIndex);
     return AddVariable(nodeid, qn, val);
+  }
+
+  Node Node::AddVariable(const std::string& nodeid, const std::string& browsename, const Variant& val)
+  {
+    NodeID node = ParseNodeIdFromString(nodeid, this->NodeId.GetNamespaceIndex());
+    QualifiedName qn = ParseQualifiedNameFromString(browsename, this->browseName.NamespaceIndex);
+    return AddVariable(node, qn, val);
   }
 
   Node Node::AddVariable(const NodeID& nodeid, const QualifiedName& browsename, const Variant& val)
@@ -321,11 +285,18 @@ namespace OpcUa
   }
 
 
-  Node Node::AddProperty(const std::string& name, const Variant& val)
+  Node Node::AddProperty(const std::string& browsename, const Variant& val) 
   {
-    NodeID nodeid = ParseNodeIdFromString(this->NodeId.GetNamespaceIndex(), name);
-    QualifiedName qn = ParseQualifiedNameFromString(this->browseName.NamespaceIndex, name);
+    NodeID nodeid = OpcUa::NumericNodeID(Common::GenerateNewID(), this->NodeId.GetNamespaceIndex());
+    QualifiedName qn = ParseQualifiedNameFromString(browsename, this->browseName.NamespaceIndex);
     return AddProperty(nodeid, qn, val);
+  }
+
+  Node Node::AddProperty(const std::string& nodeid, const std::string& browsename, const Variant& val)
+  {
+    NodeID node = ParseNodeIdFromString(nodeid, this->NodeId.GetNamespaceIndex());
+    QualifiedName qn = ParseQualifiedNameFromString(browsename, this->browseName.NamespaceIndex);
+    return AddProperty(node, qn, val);
   }
 
   Node Node::AddProperty(const NodeID& nodeid, const QualifiedName& browsename, const Variant& val)

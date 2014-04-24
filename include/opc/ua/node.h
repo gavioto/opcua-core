@@ -99,10 +99,13 @@ namespace OpcUa
       void AddReference(const OpcUa::ReferenceDescription desc) {return server->AddressSpace()->AddReference(this->NodeId, desc);}
       //Helper classes to modify address space model
       Node AddFolder(const NodeID& nodeid, const QualifiedName& browsename);
+      Node AddFolder(const std::string& nodeid, const std::string& browsename); 
       Node AddFolder(const std::string& name); 
       Node AddVariable(const NodeID& nodeid, const QualifiedName& browsename, const Variant& val);
-      Node AddVariable(const std::string& name, const Variant& val); 
+      Node AddVariable(const std::string& nodeid, const std::string& browsename, const Variant& val); 
+      Node AddVariable(const std::string& browsename, const Variant& val); 
       Node AddProperty(const NodeID& nodeid, const QualifiedName& browsename, const Variant& val);
+      Node AddProperty(const std::string& nodeid, const std::string& browsename, const Variant& val); 
       Node AddProperty(const std::string& name, const Variant& val); 
 
     private:
@@ -113,8 +116,8 @@ namespace OpcUa
       bool mIsNull = true;
       NodeID NodeId;
       QualifiedName browseName ;
-      QualifiedName ParseQualifiedNameFromString(uint16_t default_ns, const std::string& str);
-      NodeID ParseNodeIdFromString(uint16_t default_ns, const std::string& str);
+      QualifiedName ParseQualifiedNameFromString(const std::string& str, uint16_t default_ns);
+      NodeID ParseNodeIdFromString(const std::string& str, uint16_t default_ns);
       friend std::ostream& operator<<(std::ostream& os, const Node& node){
         os << node.ToString();
         return os;
