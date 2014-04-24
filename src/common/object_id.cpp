@@ -15,6 +15,6 @@
 Common::ObjectID Common::GenerateNewID()
 {
   static std::atomic<Common::ObjectID> objectID;
-  return ++objectID;
+  return ++objectID + 1000;
 }
 
