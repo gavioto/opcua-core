@@ -17,7 +17,7 @@ using namespace testing;
 
 TEST(ModulesConfiguration, ParsesConfigurationFile)
 {
-  Common::ModulesConfiguration modules = Common::ParseConfiguration("./tests/configs/test.config");
+  Common::ModulesConfiguration modules = Common::ParseConfiguration("./tests/configs/test.conf");
   ASSERT_EQ(modules.size(), 1);
   const Common::ModuleConfiguration module = modules.front();
   ASSERT_EQ(module.ID, "child_module");
