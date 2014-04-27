@@ -4,7 +4,7 @@
 # http://www.gnu.org/licenses/lgpl.html)
 #
 
-LIBS = -lboost_system -lboost_filesystem -lxml2 -lpthread -ldl
+LIBS = -lboost_system -lboost_filesystem -lxml2 -lpthread -ldl $(UAMAPPINGS_LIBS)
 COMMON_INCLUDES = -I$(top_srcdir) -I$(top_srcdir)/src -I$(top_srcdir)/include -I/usr/include/libxml2 $(UAMAPPINGS_INCLUDES)
 
 opcincludedir = $(includedir)/opc
@@ -56,6 +56,7 @@ libopcuacore_la_SOURCES = \
                   src/common/value.cpp \
                   src/common/exception.cpp \
                   src/common/common_errors.cpp \
+                  src/node.cpp \
                   src/socket_channel.cpp
 
 libopcuacore_la_CPPFLAGS = $(COMMON_INCLUDES)

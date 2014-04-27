@@ -638,6 +638,7 @@ LTLIBOBJS
 LIBOBJS
 RELEASE_DATE
 UAMAPPINGS_INCLUDES
+UAMAPPINGS_LIBS
 GMOCK_INCLUDES
 GMOCK_LIB
 GTEST_INCLUDES
@@ -15228,6 +15229,8 @@ fi
 # Check whether --with-uamappings was given.
 if test "${with_uamappings+set}" = set; then :
   withval=$with_uamappings;
+              UAMAPPINGS_LIBS="-L$with_uamappings/.libs -lopcuabinary"
+
               UAMAPPINGS_INCLUDES=-I$with_uamappings/include
 
               { $as_echo "$as_me:${as_lineno-$LINENO}: opcuamappings path: $with_uamappings" >&5

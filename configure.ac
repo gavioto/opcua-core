@@ -48,6 +48,7 @@ AC_ARG_WITH([gmock],
 AC_ARG_WITH([uamappings], 
             [AS_HELP_STRING([--with-uamappings=DIR], [defines path to opcua-mappings root directory])],
             [ 
+              AC_SUBST([UAMAPPINGS_LIBS], ["-L$with_uamappings/.libs -lopcuabinary"])
               AC_SUBST([UAMAPPINGS_INCLUDES], [-I$with_uamappings/include])
               AC_MSG_NOTICE([opcuamappings path: $with_uamappings]) 
             ], 
