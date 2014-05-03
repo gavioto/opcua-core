@@ -14,6 +14,7 @@
 #include <opc/common/interface.h>
 #include <opc/common/class_pointers.h>
 #include <opc/ua/protocol/subscriptions.h>
+#include <opc/ua/protocol/monitored_items.h>
 
 namespace OpcUa
 {
@@ -27,6 +28,7 @@ namespace OpcUa
 
     public:
       virtual SubscriptionData CreateSubscription(const SubscriptionParameters& parameters) = 0;
+      virtual MonitoredItemsData CreateMonitoredItems(const MonitoredItemsParameters& parameters) = 0;
     };
 
   }
