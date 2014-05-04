@@ -17,7 +17,7 @@ using namespace testing;
 
 TEST(ModulesConfiguration, ParsesConfigurationFile)
 {
-  Common::ModulesConfiguration modules = Common::ParseConfiguration("./tests/configs/test.xml");
+  Common::ModulesConfiguration modules = Common::ParseConfiguration("./tests/configs/test.conf");
   ASSERT_EQ(modules.size(), 1);
   const Common::ModuleConfiguration module = modules.front();
   ASSERT_EQ(module.ID, "child_module");
@@ -52,8 +52,8 @@ TEST(ModulesConfiguration, SavesConfigurationFile)
   addon.Parameters.Parameters.push_back(Common::Parameter("parameter", "value"));
   addon.Parameters.Groups.push_back(group);
 
-  Common::SaveConfiguration(Common::ModulesConfiguration({addon}), "test_config.xml");
-  const Common::ModulesConfiguration& modules = Common::ParseConfiguration("test_config.xml");
+  Common::SaveConfiguration(Common::ModulesConfiguration({addon}), "test_config.config");
+  const Common::ModulesConfiguration& modules = Common::ParseConfiguration("test_config.config");
   ASSERT_EQ(modules.size(), 1);
   const Common::ModuleConfiguration& config = modules[0];
   ASSERT_EQ(config.ID, "test_addon");
@@ -77,3 +77,4 @@ TEST(ModulesConfiguration, ParsesConfigurationFilesInDirectory)
   ASSERT_EQ(modules.size(), 1);
   ASSERT_EQ(modules[0].ID, "child_module");
 }
+

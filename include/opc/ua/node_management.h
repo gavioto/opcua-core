@@ -23,11 +23,11 @@ namespace OpcUa
 {
   namespace Remote
   {
-    //Fixme: calld nodemanagement in spec, but addressapce naming is used everywhere in this implementation
-    class AddressSpaceServices : private Common::Interface
+
+    class NodeManagementServices : private Common::Interface
     {
     public:
-      DEFINE_CLASS_POINTERS(AddressSpaceServices);
+      DEFINE_CLASS_POINTERS(NodeManagementServices);
 
     public:
       virtual void AddAttribute(const NodeID& node, AttributeID attribute, const Variant& value) = 0;

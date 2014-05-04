@@ -119,7 +119,7 @@ am_libopcuacore_la_OBJECTS = libopcuacore_la-application.lo \
 	libopcuacore_la-dynamic_addon_factory.lo \
 	libopcuacore_la-dynamic_library.lo libopcuacore_la-value.lo \
 	libopcuacore_la-exception.lo libopcuacore_la-common_errors.lo \
-	libopcuacore_la-socket_channel.lo
+	libopcuacore_la-node.lo libopcuacore_la-socket_channel.lo
 libopcuacore_la_OBJECTS = $(am_libopcuacore_la_OBJECTS)
 am__EXEEXT_1 = common_gtest$(EXEEXT) common_test$(EXEEXT)
 am_common_gtest_OBJECTS = common_gtest-test_addon_manager.$(OBJEXT) \
@@ -234,7 +234,7 @@ INSTALL_STRIP_PROGRAM = @INSTALL_STRIP_PROGRAM@
 LD = @LD@
 LDFLAGS = @LDFLAGS@
 LIBOBJS = @LIBOBJS@
-LIBS = -lboost_system -lboost_filesystem -lxml2 -lpthread -ldl
+LIBS = -lboost_system -lboost_filesystem -lxml2 -lpthread -ldl $(UAMAPPINGS_LIBS)
 LIBTOOL = @LIBTOOL@
 LIPO = @LIPO@
 LN_S = @LN_S@
@@ -263,6 +263,7 @@ SET_MAKE = @SET_MAKE@
 SHELL = @SHELL@
 STRIP = @STRIP@
 UAMAPPINGS_INCLUDES = @UAMAPPINGS_INCLUDES@
+UAMAPPINGS_LIBS = @UAMAPPINGS_LIBS@
 VERSION = @VERSION@
 abs_builddir = @abs_builddir@
 abs_srcdir = @abs_srcdir@
@@ -366,6 +367,7 @@ libopcuacore_la_SOURCES = \
                   src/common/value.cpp \
                   src/common/exception.cpp \
                   src/common/common_errors.cpp \
+                  src/node.cpp \
                   src/socket_channel.cpp
 
 libopcuacore_la_CPPFLAGS = $(COMMON_INCLUDES)
@@ -530,6 +532,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libopcuacore_la-dynamic_library.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libopcuacore_la-errors_addon_manager.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libopcuacore_la-exception.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libopcuacore_la-node.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libopcuacore_la-object_id.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libopcuacore_la-socket_channel.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libopcuacore_la-thread.Plo@am__quote@
@@ -632,6 +635,13 @@ libopcuacore_la-common_errors.lo: src/common/common_errors.cpp
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='src/common/common_errors.cpp' object='libopcuacore_la-common_errors.lo' libtool=yes @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCXX_FALSE@	$(LIBTOOL)  --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libopcuacore_la_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o libopcuacore_la-common_errors.lo `test -f 'src/common/common_errors.cpp' || echo '$(srcdir)/'`src/common/common_errors.cpp
+
+libopcuacore_la-node.lo: src/node.cpp
+@am__fastdepCXX_TRUE@	$(LIBTOOL)  --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libopcuacore_la_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT libopcuacore_la-node.lo -MD -MP -MF $(DEPDIR)/libopcuacore_la-node.Tpo -c -o libopcuacore_la-node.lo `test -f 'src/node.cpp' || echo '$(srcdir)/'`src/node.cpp
+@am__fastdepCXX_TRUE@	$(am__mv) $(DEPDIR)/libopcuacore_la-node.Tpo $(DEPDIR)/libopcuacore_la-node.Plo
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='src/node.cpp' object='libopcuacore_la-node.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(LIBTOOL)  --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libopcuacore_la_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o libopcuacore_la-node.lo `test -f 'src/node.cpp' || echo '$(srcdir)/'`src/node.cpp
 
 libopcuacore_la-socket_channel.lo: src/socket_channel.cpp
 @am__fastdepCXX_TRUE@	$(LIBTOOL)  --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libopcuacore_la_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT libopcuacore_la-socket_channel.lo -MD -MP -MF $(DEPDIR)/libopcuacore_la-socket_channel.Tpo -c -o libopcuacore_la-socket_channel.lo `test -f 'src/socket_channel.cpp' || echo '$(srcdir)/'`src/socket_channel.cpp
