@@ -86,7 +86,7 @@ namespace OpcUa
     return SetAttribute(OpcUa::AttributeID::VALUE, value);
   }
 
-  std::vector<Node> Node::GetChildren(const OpcUa::ReferenceID refid) const
+  std::vector<Node> Node::GetChildren(const OpcUa::ReferenceID& refid) const
   {
     OpcUa::BrowseDescription description;
     description.NodeToBrowse = Id;

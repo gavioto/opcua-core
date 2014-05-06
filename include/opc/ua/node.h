@@ -56,7 +56,7 @@ namespace OpcUa
 
     /// @brief List childrenn nodes by specified reference
     /// @return One or zero chilren nodes.
-    std::vector<Node> GetChildren(OpcUa::ReferenceID refid) const;
+    std::vector<Node> GetChildren(const OpcUa::ReferenceID& refid) const;
 
     /// @brief Get ghildren by hierarchal referencies.
     /// @return One or zero chilren nodes.
@@ -107,7 +107,7 @@ namespace OpcUa
     Node AddProperty(const std::string& browseName, const Variant& val);
 
     std::string ToString() const;
-    OpcUa::Remote::Server::SharedPtr GetServer() const {return Server;}
+    OpcUa::Remote::Server::SharedPtr GetServer() const {return Server;} //FIXME: I need this to create a copy for python binding, another way?
 
     bool operator==(Node const& x) const { return Id == x.Id; }
     bool operator!=(Node const& x) const { return Id != x.Id; }
