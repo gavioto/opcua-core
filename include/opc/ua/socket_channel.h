@@ -24,6 +24,7 @@ namespace OpcUa
 
     virtual std::size_t Receive(char* data, std::size_t size);
     virtual void Send(const char* message, std::size_t size);
+    virtual int WaitForData(float second);
 
   private:
     int Socket;
