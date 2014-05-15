@@ -122,8 +122,6 @@ namespace OpcUa
 
   std::ostream& operator<<(std::ostream& os, const Node& node);
 
-  QualifiedName ParseQualifiedNameFromString(const std::string& str, uint16_t default_ns);
-  NodeID ParseNodeIdFromString(const std::string& str, uint16_t default_ns);
   ObjectID VariantTypeToDataType(VariantType vt);
 
 } // namespace OpcUa

@@ -151,7 +151,7 @@ namespace OpcUa
     uint16_t ns = BrowseName.NamespaceIndex;
     for (std::string str: path)
     {
-      QualifiedName qname = ParseQualifiedNameFromString(str, ns);
+      QualifiedName qname = QualifiedName::ParseFromString(str, ns);
       ns = qname.NamespaceIndex;
       vec.push_back(qname);
     }
@@ -245,15 +245,15 @@ namespace OpcUa
 
   Node Node::AddFolder(const std::string& nodeid, const std::string& browsename)
    {
-     NodeID node = ParseNodeIdFromString(nodeid, this->Id.GetNamespaceIndex());
-     QualifiedName qn = ParseQualifiedNameFromString(browsename, this->BrowseName.NamespaceIndex);
+     NodeID node = NodeID::ParseFromString(nodeid, this->Id.GetNamespaceIndex());
+     QualifiedName qn = QualifiedName::ParseFromString(browsename, this->BrowseName.NamespaceIndex);
      return AddFolder(node, qn);
    }
 
   Node Node::AddFolder(const std::string& name)
   {
     NodeID nodeid = OpcUa::NumericNodeID(Common::GenerateNewID(), this->Id.GetNamespaceIndex());
-    QualifiedName qn = ParseQualifiedNameFromString(name, BrowseName.NamespaceIndex);
+    QualifiedName qn = QualifiedName::ParseFromString(name, BrowseName.NamespaceIndex);
     return AddFolder(nodeid, qn);
   }
 
@@ -295,14 +295,14 @@ namespace OpcUa
   Node Node::AddVariable(const std::string& name, const Variant& val)
   {
     NodeID nodeid = OpcUa::NumericNodeID(Common::GenerateNewID(), this->Id.GetNamespaceIndex());
-    QualifiedName qn = ParseQualifiedNameFromString(name, BrowseName.NamespaceIndex);
+    QualifiedName qn = QualifiedName::ParseFromString(name, BrowseName.NamespaceIndex);
     return AddVariable(nodeid, qn, val);
   }
 
   Node Node::AddVariable(const std::string& nodeid, const std::string& browsename, const Variant& val)
   {
-    NodeID node = ParseNodeIdFromString(nodeid, this->Id.GetNamespaceIndex());
-    QualifiedName qn = ParseQualifiedNameFromString(browsename, this->BrowseName.NamespaceIndex);
+    NodeID node = NodeID::ParseFromString(nodeid, this->Id.GetNamespaceIndex());
+    QualifiedName qn = QualifiedName::ParseFromString(browsename, this->BrowseName.NamespaceIndex);
     return AddVariable(node, qn, val);
   }
 
@@ -357,14 +357,14 @@ namespace OpcUa
   Node Node::AddProperty(const std::string& name, const Variant& val)
   {
     NodeID nodeid = OpcUa::NumericNodeID(Common::GenerateNewID(), this->Id.GetNamespaceIndex());
-    const QualifiedName& qname = ParseQualifiedNameFromString(name, BrowseName.NamespaceIndex);
+    const QualifiedName& qname = QualifiedName::ParseFromString(name, BrowseName.NamespaceIndex);
     return AddProperty(nodeid, qname, val);
   }
 
   Node Node::AddProperty(const std::string& nodeid, const std::string& browsename, const Variant& val)
   {
-    NodeID node = ParseNodeIdFromString(nodeid, this->Id.GetNamespaceIndex());
-    QualifiedName qn = ParseQualifiedNameFromString(browsename, this->BrowseName.NamespaceIndex);
+    NodeID node = NodeID::ParseFromString(nodeid, this->Id.GetNamespaceIndex());
+    QualifiedName qn = QualifiedName::ParseFromString(browsename, this->BrowseName.NamespaceIndex);
     return AddProperty(node, qn, val);
   }
 
@@ -462,31 +462,7 @@ OpcUa::ObjectID OpcUa::VariantTypeToDataType(OpcUa::VariantType vt)
   }
 }
 
-OpcUa::QualifiedName OpcUa::ParseQualifiedNameFromString(const std::string& str, uint16_t default_ns)
-{
-  std::size_t found = str.find(":");
-  if (found != std::string::npos)
-  {
-    uint16_t ns = std::stoi(str.substr(0, found));
-    std::string name = str.substr(found+1, str.length() - found);
-    return QualifiedName(ns, name);
-  }
 
-  return QualifiedName(default_ns, str);
-}
-
-OpcUa::NodeID OpcUa::ParseNodeIdFromString(const std::string& str, uint16_t default_ns)
-{
-  std::size_t found = str.find(":");
-  if (found != std::string::npos)
-  {
-    uint16_t ns = std::stoi(str.substr(0, found));
-    std::string name = str.substr(found+1, str.length() - found);
-    return StringNodeID(name, ns);
-  }
-
-  return StringNodeID(str, default_ns);
-}
 
 std::ostream& OpcUa::operator<<(std::ostream& os, const Node& node)
 {
