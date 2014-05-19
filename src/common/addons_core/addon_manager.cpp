@@ -162,13 +162,13 @@ namespace
     {
       while (AddonData* addonData = GetNextAddonDataForStart())
       {
-        std::clog << "Creating addon '" << addonData->ID << "'" <<  std::endl;
+        std::cout << "Creating addon '" << addonData->ID << "'" <<  std::endl;
         Common::Addon::SharedPtr addon = addonData->Factory->CreateAddon();
-        std::clog << "Initializing addon '" << addonData->ID << "'" <<  std::endl;
+        std::cout << "Initializing addon '" << addonData->ID << "'" <<  std::endl;
         try
         {
           addon->Initialize(*this, addonData->Parameters);
-          std::clog << "Addon '" << addonData->ID << "' successfully initialized." <<  std::endl;
+          std::cout << "Addon '" << addonData->ID << "' successfully initialized." <<  std::endl;
         }
         catch (const std::exception& exc)
         {
