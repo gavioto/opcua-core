@@ -67,8 +67,16 @@ namespace OpcUa
     attribute.Node = Id;
     attribute.Attribute = attr;
     params.AttributesToRead.push_back(attribute);
-    DataValue dv =  Server->Attributes()->Read(params).front(); // TODO: Bug! result vector can be empty.
-    return dv.Value;
+    std::vector<DataValue> vec =  Server->Attributes()-> Read(params); 
+    if ( vec.size() > 0 )
+    {
+      DataValue dv =  Server->Attributes()->Read(params).front(); 
+      return dv.Value;
+    }
+    else
+    {
+      return DataValue(); //FIXME: What does it mean when not value is found?
+    }
   }
 
   StatusCode Node::SetAttribute(const OpcUa::AttributeID attr, const Variant &value)
@@ -143,6 +151,16 @@ namespace OpcUa
   void Node::AddReference(const OpcUa::ReferenceDescription desc)
   {
     return Server->NodeManagement()->AddReference(Id, desc);
+  }
+
+  std::vector<AddNodesResult> Node::AddNodes(std::vector<AddNodesItem> items)
+  {
+    return Server->NodeManagement()->AddNodes(items);
+  }
+
+  std::vector<StatusCode> Node::AddReferences(std::vector<AddReferencesItem> items)
+  {
+    return Server->NodeManagement()->AddReferences(items);
   }
 
   Node Node::GetChild(const std::vector<std::string>& path) const

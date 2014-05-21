@@ -30,9 +30,8 @@ namespace OpcUa
   class NodeNotFoundException : public std::runtime_error 
   {
     public:
-    NodeNotFoundException() : std::runtime_error("NodeNotFoundException") { }
+      NodeNotFoundException() : std::runtime_error("NodeNotFoundException") { }
   };
-
 
   /// @brief A Node object represent an OPC-UA node.
   /// It is high level object intended for developper who want to expose
@@ -89,9 +88,11 @@ namespace OpcUa
     Variant DataType() const;
 
     //OpcUa low level methods to to modify address space model
-    void AddAttribute(OpcUa::AttributeID attr, const OpcUa::Variant& val);
+    void AddAttribute(OpcUa::AttributeID attr, const OpcUa::Variant& val); //FIXME: deprecated
+    void AddReference(const OpcUa::ReferenceDescription desc); //FIXME: deprecated
+    std::vector<AddNodesResult> AddNodes(std::vector<AddNodesItem> items);
+    std::vector<StatusCode> AddReferences(std::vector<AddReferencesItem> items);
 
-    void AddReference(const OpcUa::ReferenceDescription desc);
 
     //Helper classes to modify address space model
     Node AddFolder(const NodeID& folderId, const QualifiedName& browseName);
