@@ -7,8 +7,7 @@ before_script:
  - export GTEST_PATH
  - cd gtest-1.7.0 && ./configure && make && cd ..
  - git clone https://github.com/treww/opcua-mappings.git
- - cd opcua-mappings && ./configure --with-gtest=$PWD/gtest-1.7.0 && make
+ - cd opcua-mappings && ./configure --with-gtest=$PWD/gtest-1.7.0 && make && cd ..
 
 script: ./configure --with-gtest=$PWD/gtest-1.7.0 --with-uamappings=$PWD/opcua-mappings && make && make check
-
 
