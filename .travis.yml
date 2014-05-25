@@ -11,3 +11,4 @@ before_script:
 
 script: ./configure --with-gtest=$PWD/gtest-1.7.0 --with-uamappings=$PWD/opcua-mappings && make && make check
 
+
