@@ -9,6 +9,7 @@
 ///
 
 #include <opc/ua/socket_channel.h>
+#include <opc/ua/errors.h>
 
 #include <errno.h>
 #include <iostream>
@@ -23,7 +24,7 @@ OpcUa::SocketChannel::SocketChannel(int sock)
 {
   if (Socket < 0)
   {
-    throw std::logic_error("Internal error: unable to create connection on invalid socket.");
+    THROW_ERROR(CannotCreateChannelOnInvalidSocket);
   }
 }
 
@@ -41,11 +42,11 @@ std::size_t OpcUa::SocketChannel::Receive(char* data, std::size_t size)
   int received = recv(Socket, data, size, MSG_WAITALL);
   if (received < 0)
   {
-    throw std::logic_error(std::string("Failed to receive data from host. ") + strerror(errno) + ".");
+    THROW_OS_ERROR("Failed to receive data from host.");
   }
   if (received == 0)
   {
-    throw std::logic_error("Connection was closed by host.");
+    THROW_OS_ERROR("Connection was closed by host.");
   }
   return (std::size_t)size;
 }
@@ -55,10 +56,10 @@ void OpcUa::SocketChannel::Send(const char* message, std::size_t size)
   int sent = send(Socket, message, size, 0);
   if (sent != (int)size)
   {
-    throw std::logic_error(std::string("unable to send data to the host. ") + strerror(errno) + std::string("."));
+    THROW_OS_ERROR("unable to send data to the host. ");
   }
 }
-
+/*
 //Return 1 id data, 0 if timeout and <0 if error
 int OpcUa::SocketChannel::WaitForData(float second)
 {
@@ -73,5 +74,4 @@ int OpcUa::SocketChannel::WaitForData(float second)
 
     return select(Socket+1, &readSet, NULL, NULL, &timeout);
 }
-
-
+*/

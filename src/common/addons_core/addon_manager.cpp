@@ -132,7 +132,7 @@ namespace
       if (!DoStart())
       {
         StopAddons();
-        throw std::logic_error("Failed to start addons.");
+        THROW_ERROR(FailedToStartAddons);
       }
       ManagerStarted = true;
     }

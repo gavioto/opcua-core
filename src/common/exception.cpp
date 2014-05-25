@@ -58,7 +58,9 @@ Common::Error& Common::Error::AddError(const Error& subError)
 
 std::string Common::Error::GetFullMessage() const
 {
-  std::string msg(Message);
+  std::string msg = FileName;
+  msg += "(" + std::to_string(LineNum) + "):\n";
+  msg += Message;
   std::vector<Common::Error>::const_iterator it = SubErrors.begin();
 
   for (; it != SubErrors.end(); ++ it)
@@ -71,6 +73,5 @@ std::string Common::Error::GetFullMessage() const
 
 const char* Common::Error::what() const throw()
 {
-  FullMessage = GetFullMessage();
-  return  FullMessage.c_str();
+  return  Message.c_str();
 }
