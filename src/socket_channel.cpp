@@ -59,7 +59,7 @@ void OpcUa::SocketChannel::Send(const char* message, std::size_t size)
     THROW_OS_ERROR("unable to send data to the host. ");
   }
 }
-/*
+
 //Return 1 id data, 0 if timeout and <0 if error
 int OpcUa::SocketChannel::WaitForData(float second)
 {
@@ -74,4 +74,3 @@ int OpcUa::SocketChannel::WaitForData(float second)
 
     return select(Socket+1, &readSet, NULL, NULL, &timeout);
 }
-*/
