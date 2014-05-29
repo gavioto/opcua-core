@@ -12,6 +12,7 @@
 
 #include <opc/common/addons_core/addon_manager.h>
 #include <opc/common/addons_core/dynamic_addon_factory.h>
+#include <opc/common/errors.h>
 
 #include <stdexcept>
 
@@ -27,7 +28,7 @@ namespace
     {
       if (Addons.get())
       {
-        throw std::logic_error("Application already started.");
+        THROW_ERROR(ApplicationAlreayStarted);
       }
 
       Addons = Common::CreateAddonsManager();
@@ -42,7 +43,7 @@ namespace
     {
       if (!Addons.get())
       {
-        throw std::logic_error("Cannot return addons manager. Application wasn't started.");
+        THROW_ERROR(ApplicationNotStarted);
       }
       return *Addons;
     }

@@ -17,6 +17,7 @@ opcuainclude_HEADERS = \
   include/opc/ua/server.h \
   include/opc/ua/attributes.h \
   include/opc/ua/endpoints.h \
+  include/opc/ua/errors.h \
   include/opc/ua/socket_channel.h
 
 commondir = $(opcincludedir)/common
@@ -57,6 +58,7 @@ libopcuacore_la_SOURCES = \
                   src/common/exception.cpp \
                   src/common/common_errors.cpp \
                   src/node.cpp \
+                  src/opcua_errors.cpp \
                   src/socket_channel.cpp
 
 libopcuacore_la_CPPFLAGS = $(COMMON_INCLUDES)

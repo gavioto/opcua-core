@@ -119,7 +119,8 @@ am_libopcuacore_la_OBJECTS = libopcuacore_la-application.lo \
 	libopcuacore_la-dynamic_addon_factory.lo \
 	libopcuacore_la-dynamic_library.lo libopcuacore_la-value.lo \
 	libopcuacore_la-exception.lo libopcuacore_la-common_errors.lo \
-	libopcuacore_la-node.lo libopcuacore_la-socket_channel.lo
+	libopcuacore_la-node.lo libopcuacore_la-opcua_errors.lo \
+	libopcuacore_la-socket_channel.lo
 libopcuacore_la_OBJECTS = $(am_libopcuacore_la_OBJECTS)
 am__EXEEXT_1 = common_gtest$(EXEEXT) common_test$(EXEEXT)
 am_common_gtest_OBJECTS = common_gtest-test_addon_manager.$(OBJEXT) \
@@ -328,6 +329,7 @@ opcuainclude_HEADERS = \
   include/opc/ua/server.h \
   include/opc/ua/attributes.h \
   include/opc/ua/endpoints.h \
+  include/opc/ua/errors.h \
   include/opc/ua/socket_channel.h
 
 commondir = $(opcincludedir)/common
@@ -368,6 +370,7 @@ libopcuacore_la_SOURCES = \
                   src/common/exception.cpp \
                   src/common/common_errors.cpp \
                   src/node.cpp \
+                  src/opcua_errors.cpp \
                   src/socket_channel.cpp
 
 libopcuacore_la_CPPFLAGS = $(COMMON_INCLUDES)
@@ -534,6 +537,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libopcuacore_la-exception.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libopcuacore_la-node.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libopcuacore_la-object_id.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libopcuacore_la-opcua_errors.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libopcuacore_la-socket_channel.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libopcuacore_la-thread.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libopcuacore_la-value.Plo@am__quote@
@@ -642,6 +646,13 @@ libopcuacore_la-node.lo: src/node.cpp
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='src/node.cpp' object='libopcuacore_la-node.lo' libtool=yes @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCXX_FALSE@	$(LIBTOOL)  --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libopcuacore_la_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o libopcuacore_la-node.lo `test -f 'src/node.cpp' || echo '$(srcdir)/'`src/node.cpp
+
+libopcuacore_la-opcua_errors.lo: src/opcua_errors.cpp
+@am__fastdepCXX_TRUE@	$(LIBTOOL)  --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libopcuacore_la_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT libopcuacore_la-opcua_errors.lo -MD -MP -MF $(DEPDIR)/libopcuacore_la-opcua_errors.Tpo -c -o libopcuacore_la-opcua_errors.lo `test -f 'src/opcua_errors.cpp' || echo '$(srcdir)/'`src/opcua_errors.cpp
+@am__fastdepCXX_TRUE@	$(am__mv) $(DEPDIR)/libopcuacore_la-opcua_errors.Tpo $(DEPDIR)/libopcuacore_la-opcua_errors.Plo
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='src/opcua_errors.cpp' object='libopcuacore_la-opcua_errors.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(LIBTOOL)  --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libopcuacore_la_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o libopcuacore_la-opcua_errors.lo `test -f 'src/opcua_errors.cpp' || echo '$(srcdir)/'`src/opcua_errors.cpp
 
 libopcuacore_la-socket_channel.lo: src/socket_channel.cpp
 @am__fastdepCXX_TRUE@	$(LIBTOOL)  --tag=CXX $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libopcuacore_la_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT libopcuacore_la-socket_channel.lo -MD -MP -MF $(DEPDIR)/libopcuacore_la-socket_channel.Tpo -c -o libopcuacore_la-socket_channel.lo `test -f 'src/socket_channel.cpp' || echo '$(srcdir)/'`src/socket_channel.cpp

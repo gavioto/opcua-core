@@ -1,0 +1,14 @@
+language: cpp
+compiler: clang
+before_script:
+ - sudo apt-get install libboost-all-dev
+ - wget https://googletest.googlecode.com/files/gtest-1.7.0.zip -O /tmp/gtest-1.7.0.zip
+ - unzip /tmp/gtest-1.7.0.zip
+ - GTEST_PATH=$PWD/gtest-1.7.0
+ - export GTEST_PATH
+ - cd gtest-1.7.0 && ./configure && make && cd ..
+ - git clone https://github.com/treww/opcua-mappings.git
+ - cd opcua-mappings && ./configure --with-gtest=$PWD/gtest-1.7.0 && make && cd ..
+
+script: ./configure --with-gtest=$PWD/gtest-1.7.0 --with-uamappings=$PWD/opcua-mappings && make && make check
+

@@ -25,6 +25,7 @@ DEFINE_ADDONS_MANAGER_ERROR(AddonRegisteredButShouldnt);
 DEFINE_ADDONS_MANAGER_ERROR(AddonIsNotStarted);
 DEFINE_ADDONS_MANAGER_ERROR(UnableToLoadDynamicLibrary);
 DEFINE_ADDONS_MANAGER_ERROR(UnableToFundSymbolInTheLibrary);
+DEFINE_ADDONS_MANAGER_ERROR(FailedToStartAddons);
 
 #endif // __errors_h__633b7b11_4f77_424d_8f9d_b8057a779c53
 

@@ -220,7 +220,10 @@ namespace Common
 #define CREATE_ERROR4(data, param1, param2, param3, param4) ::Common::CreateError(__LINE__, __FILE__, data.ErrorCode, data.ErrorMessage, param1, param2, param3, param4)
 #define THROW_ERROR4(data, param1, param2, param3, param4) throw CREATE_ERROR4(data, param1, param2, param3, param4)
 
+
 #include "errors.h"
+
+#define THROW_OS_ERROR(UserMsg) (throw ::Common::CreateError(__LINE__, __FILE__, errno, "%1% %2%.", UserMsg, strerror(errno)))
 
 #define BEGIN_TRY_BLOCK try{
 #define END_TRY_BLOCK(handler)\
